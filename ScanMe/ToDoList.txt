@@ -1,0 +1,4 @@
+Parse Data into (total / each item with price / vat / date / company / currency )
+ask user if data is correct (if not let them correct it)
+categorise receipt and allow user to add to custom name collection (food shopping recipts)
+store data as parsed aswell as image copy of recipts

@@ -1,7 +1,13 @@
 //file name: helperFunctions.js
+
+
+const path = require('path')
+require('dotenv').config({ path: path.resolve('.env') })
+
+
 const appHelper = require('./polyGroup');
 
-require('dotenv').config();
+
 
 
 
@@ -26,7 +32,7 @@ function generateBody(image) {
   };
   return body;
 }
-//file: helperFunctions.js
+
 async function callGoogleVisionAsync(image) {
     const body = generateBody(image); //pass in our image for the payload
     const response = await fetch(API_URL, {
