@@ -8,7 +8,12 @@ require('dotenv').config({ path: path.resolve('.env') })
 const appHelper = require('./polyGroup');
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 const API_KEY = process.env.API_KEY; //put your key here.
+=======
+
+const API_KEY = 'AIzaSyAngrsVnz24GwDhPQYzt7iBWMwOBxJpjJ0'; //put your key here.
+>>>>>>> parent of e242a12 (added API Key Protection)
 =======
 
 const API_KEY = 'AIzaSyAngrsVnz24GwDhPQYzt7iBWMwOBxJpjJ0'; //put your key here.
