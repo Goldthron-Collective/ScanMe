@@ -1,24 +1,11 @@
 //file name: helperFunctions.js
-
-
-const path = require('path')
-require('dotenv').config({ path: path.resolve('.env') })
-
+import { config } from './config.js'
 
 const appHelper = require('./polyGroup');
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-const API_KEY = process.env.API_KEY; //put your key here.
-=======
 
-const API_KEY = 'AIzaSyAngrsVnz24GwDhPQYzt7iBWMwOBxJpjJ0'; //put your key here.
->>>>>>> parent of e242a12 (added API Key Protection)
-=======
+const API_KEY = config.API_KEY; //put your key here.
 
-const API_KEY = 'AIzaSyAngrsVnz24GwDhPQYzt7iBWMwOBxJpjJ0'; //put your key here.
->>>>>>> parent of e242a12 (added API Key Protection)
-//this endpoint will tell Google to use the Vision API. We are passing in our key as well.
 const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
 function generateBody(image) {
   const body = {
