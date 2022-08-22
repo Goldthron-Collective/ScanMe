@@ -7,10 +7,6 @@ require('dotenv').config({ path: path.resolve('.env') })
 
 const appHelper = require('./polyGroup');
 
-
-
-
-
 const API_KEY = process.env.API_KEY; //put your key here.
 //this endpoint will tell Google to use the Vision API. We are passing in our key as well.
 const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
