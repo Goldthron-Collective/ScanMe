@@ -23,14 +23,6 @@ function generateBody(image) {
   };
   return body;
 }
-function parseDate(data) 
-{
-
-}
-function parseCurrency(data) 
-{
-
-}
 function parseData(data) 
 {
   //find date
@@ -43,8 +35,8 @@ function parseData(data)
   //console.log(data);
   //const date = //regex of all date formats
   //const items = //regex of money 
-  const dateRegex = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
-  const dateReg = /^(?:(?:(?:0[1-9]|1\d|2[0-8])(?:0[1-9]|1[0-2])|(?:29|30)(?:0[13-9]|1[0-2])|31(?:0[13578]|1[02]))[1-9]\d{1}|2902(?:(?:0[48]|[2468][048]|[13579][26])|00))$/;
+  const date1 = /\d{2}([\/.-])\d{2}\1\d{4}/;
+  const date2 = /\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)/;
   
   const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
   const total = ["balance", "total", "due","sub-total","sale"];
@@ -55,11 +47,15 @@ function parseData(data)
 
   for(let i = 0; i < data.length; i++)
   {
-    date = data[i].match(dateReg);
+    date = data[i].match(date1);
+    console.log(data[i]);
+    console.log(date);
     if(date != null)
     {
       break;
     }
+    
+
   }
   for(let i = 0; i < data.length; i++)
   {
@@ -71,7 +67,7 @@ function parseData(data)
   }
 
   console.log(date);
-  console.log(currency);
+  //console.log(currency);
   
  
  
@@ -88,13 +84,13 @@ function parseData(data)
   }
 
   totalMatch = String(totalMatch);
-  console.log(totalMatch);
+  //console.log(totalMatch);
   
  
 
  
   var doublenumber = Number(totalMatch .replace(/[^0-9\.]+/g,""));
-  alert(doublenumber); 
+  //alert(doublenumber); 
  
   
 }
@@ -117,6 +113,8 @@ async function callGoogleVisionAsync(image) {
     const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase());
 
     parseData(lower);
+    
+
 
     return lower
       ? lower
