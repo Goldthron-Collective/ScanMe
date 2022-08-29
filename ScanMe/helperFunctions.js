@@ -67,11 +67,6 @@ function parseData(data)
   }
 
   console.log(date);
-  //console.log(currency);
-  
- 
- 
-
   
 
   for (let i = 0; i < total.length; i++) 

@@ -6,16 +6,14 @@ import { RootTabScreenProps } from '../types';
 import ImagePickerComponent from "../ImagePickerComponent";
 import callGoogleVisionAsync from "../helperFunctions.js";
 
-     
 
 
 
 export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
   return (
     <View style={styles.container}>
-
       <Text style={styles.title}>Tab One2</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+     <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <ImagePickerComponent onSubmit={callGoogleVisionAsync} />
     </View>
   );

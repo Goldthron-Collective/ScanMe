@@ -1,13 +1,17 @@
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View , ImageBackground} from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import { useState } from 'react';
+
 
 
 //import { Text, View } from '../components/Themed';
 
 export default function TabTwoScreen() {
+ 
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [previewVisible, setPreviewVisible] = useState(false)
+  const [capturedImage, setCapturedImage] = useState<any>(null)
 
   if (!permission) {
     // Camera permissions are still loading
@@ -26,31 +30,56 @@ export default function TabTwoScreen() {
     );
   }
   
+  
 
   function toggleCameraType() {
     setType((current) => (
       current === CameraType.back ? CameraType.front : CameraType.back
     ));
   }
-//<Text style={styles.title}>Tab Two</Text>
-    //  <View style={styles.separator} />
-  return (
+
+ const takePicture = async () => {
+  if (this.camera) {
+    this.camera.takePictureAsync({ onPictureSaved: this.onPictureSaved });
+}
+};
+    
+const onPictureSaved = photo => {
+  console.log(photo);
+} 
+
+
+  return (   
     <View style={styles.container}>
       
-      <Camera style={styles.camera} type={type}>
+      <Camera style={styles.camera} type={type} >
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
             onPress={toggleCameraType}>
             <Text style={styles.text}>Flip Camera</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={takePicture}
+            style={{
+            width: 70,
+            height: 70,
+            bottom: 0,
+            borderRadius: 50,
+            backgroundColor: '#fff'
+            }}
+            />
         </View>
       </Camera>
+      </View>
+      );
+  }
       
      
-    </View>
-  );
-}
+    
+
 
 const styles = StyleSheet.create({
   container: {
