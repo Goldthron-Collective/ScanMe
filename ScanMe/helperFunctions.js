@@ -103,6 +103,8 @@ async function callGoogleVisionAsync(image) {
     });
     const result = await response.json();
 
+    console.log(result);
+
     const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
 
     const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase());

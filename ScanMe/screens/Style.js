@@ -1,6 +1,6 @@
 import { WhiteBalance } from 'expo-camera/build/Camera.types'
 import { StyleSheet } from 'react-native'
-import { color } from 'react-native-reanimated'
+//import { color } from 'react-native-reanimated'
 
 export default StyleSheet.create({
   Colors:

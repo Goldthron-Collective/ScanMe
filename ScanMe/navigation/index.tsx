@@ -17,8 +17,9 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 
 import Login from '../screens/Login';
 import SignUP from '../screens/SignUP';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
+
+import History from '../screens/History';
+import Cam from '../screens/Camera';
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -62,37 +63,15 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="History"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}>
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Modal')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-        })}
-      />
-      <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
+        name="History"
+        component={History}
         options={{
-          title: 'Tab Two',
+          title: 'History',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
@@ -100,7 +79,7 @@ function BottomTabNavigator() {
         name="login"
         component={Login}
         options={{
-          title: 'Tab Two',
+          title: 'Login',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
@@ -108,7 +87,15 @@ function BottomTabNavigator() {
         name="signup"
         component={SignUP}
         options={{
-          title: 'Tab Two',
+          title: 'SignUp',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Camera"
+        component={Cam}
+        options={{
+          title: 'Camera',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
