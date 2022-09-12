@@ -1,4 +1,9 @@
 import { config } from './config.js'
+import React, { useState, useEffect } from 'react';
+import { Button, Image, View, Text , StyleSheet, TouchableOpacity} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 
 const appHelper = require('./polyGroup');
 const API_KEY = config.API_KEY; 
@@ -25,6 +30,7 @@ function generateBody(image) {
 }
 function parseData(data) 
 {
+  
   //find date
   //find total and remove everthing after that in array
   //find currency
@@ -86,7 +92,14 @@ function parseData(data)
  
   var doublenumber = Number(totalMatch .replace(/[^0-9\.]+/g,""));
   //alert(doublenumber); 
+
+
+  //send to new screen
  
+  navigation.navigate('Save');
+ 
+  
+
   
 }
 
@@ -110,6 +123,8 @@ async function callGoogleVisionAsync(image) {
     const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase());
 
     parseData(lower);
+
+   
     
 
 

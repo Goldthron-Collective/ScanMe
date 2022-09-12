@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, Image , TouchableOpacity } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
 import ImagePickerComponent from "../ImagePickerComponent";
@@ -12,6 +12,8 @@ export default function App() {
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
+  const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
+  const [flashMode, setFlashMode] = useState('off');
 
   useEffect(() => {
     (async () => {
@@ -38,6 +40,24 @@ export default function App() {
     let newPhoto = await cameraRef.current.takePictureAsync(options);
     setPhoto(newPhoto);
   };
+  const switchCamera = () => {
+    if (cameraType === 'back') {
+      setCameraType('front')
+    } else {
+      setCameraType('back')
+    }
+  }
+  const handleFlashMode = () => {
+    if (flashMode === 'on') {
+      setFlashMode('off')
+    } else if (flashMode === 'off') {
+      setFlashMode('on')
+    } else {
+      setFlashMode('auto')
+    }
+
+  }
+
 
   if (photo) {
 
@@ -59,11 +79,36 @@ export default function App() {
   }
 
   return (
-    <Camera style={styles.container} ref={cameraRef}>
+    <Camera flashMode={flashMode} type={cameraType} style={styles.container} ref={cameraRef}>
+
+        <TouchableOpacity style=
+        {{
+          position: 'absolute',
+          left: '7%',
+          top: '7%',
+          borderRadius: '50%',
+          height: 40,
+          width: 40, 
+          backgroundColor: flashMode === 'off' ? '#000' : '#fff',
+        }} 
+        onPress={handleFlashMode}>
+
+            <Text style={{fontSize: 30}}>
+            ⚡️
+            </Text>
+        </TouchableOpacity>
+
       <View style={styles.buttonContainer}>
-        <Button title="Take Pic" onPress={takePic} />
-        <ImagePickerComponent onSubmit={callGoogleVisionAsync} />
+      <ImagePickerComponent onSubmit={callGoogleVisionAsync} />
+      <TouchableOpacity style={styles.cameraBtn} onPress={takePic} />
+      <TouchableOpacity style={styles.flipBtn} onPress={switchCamera} />
+
+
+      
+        
+
       </View>
+
       <StatusBar style="auto" />
     </Camera>
   );
@@ -75,10 +120,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonContainer: {
-    backgroundColor: '#fff',
-    alignSelf: 'flex-end'
+  flashBtn:{
+
   },
+  cameraBtn:{
+      width: 70,
+      height: 70,
+      bottom: 0,
+      borderRadius: 50,
+      backgroundColor: '#fff',
+  },
+  flipBtn: {
+    marginTop: 20,
+    borderRadius: '50%',
+    height: 25,
+    width: 25,
+    backgroundColor: '#fff',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    flexDirection: 'row',
+    flex: 1,
+    width: '100%',
+    padding: 15,
+    justifyContent: 'space-between'
+  },
+  buttonSubContain: {
+    alignSelf: 'center',
+     flex: 1,
+     alignItems: 'center'
+   },
   preview: {
     alignSelf: 'stretch',
     flex: 1
