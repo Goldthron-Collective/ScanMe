@@ -1,21 +1,33 @@
-import { StyleSheet } from 'react-native';
-
-
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
-
+import React, { Component } from "react";
+import { View, Text, FlatList, TextInput ,StyleSheet} from "react-native";
+import { NavigationActions } from "react-navigation";
 
 
 
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
+class History extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+    
+    };
+  }
+  userCheck = async () => {
+   
+    
+
+  };
+render() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>History</Text>
-     <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+     <View />
       
     </View>
   );
 }
+}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -33,3 +45,5 @@ const styles = StyleSheet.create({
     width: '80%',
   },
 });
+
+export default History

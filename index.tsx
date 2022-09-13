@@ -45,10 +45,11 @@ function RootNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="Save" component={Save} options={{ title: 'Oops!' }} />
+      
 
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="Save" component={Save} />
       </Stack.Group>
     </Stack.Navigator>
   );

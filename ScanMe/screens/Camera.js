@@ -1,13 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Button, Image , TouchableOpacity } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
-import ImagePickerComponent from "../ImagePickerComponent";
-import { shareAsync } from 'expo-sharing';
-import callGoogleVisionAsync from "../helperFunctions.js";
-import * as MediaLibrary from 'expo-media-library';
+import { StatusBar } from 'expo-status-bar';
+import * as ImagePicker from 'expo-image-picker';
+//import ImagePickerComponent from "../ImagePickerComponent";
+import gallery from '../icons/gallery.png'
 
-export default function App() {
+import { shareAsync } from 'expo-sharing';
+import helperFunctions from "../helperFunctions.js";
+import * as MediaLibrary from 'expo-media-library';
+import { config } from '../config.js'
+
+const appHelper = require('../polyGroup');
+const API_KEY = config.API_KEY; 
+const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
+
+export default function App({navigation}) {
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
@@ -40,6 +48,71 @@ export default function App() {
     let newPhoto = await cameraRef.current.takePictureAsync(options);
     setPhoto(newPhoto);
   };
+  function generateBody(image) {
+    const body = {
+      requests: [
+        {
+          image: {
+            content: image,
+          },
+          features: [
+            {
+              type: 'TEXT_DETECTION', //we willl use this API for text detection purposes.
+              maxResults: 1,
+            },
+          ],
+        },
+      ],
+    };
+    return body;
+  }
+  
+  let callGoogleVisionAsync = async (image) => {
+   
+      const body = generateBody(image); //pass in our image for the payload
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+      const result = await response.json();
+  
+      console.log(result);
+      
+      //, {data: data}
+  
+      const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
+  
+      const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase());
+
+      console.log(lower);
+  
+      navigation.navigate("Save",{arrData: lower});
+     // parseData(lower);
+  
+     
+      
+  
+  
+      return lower
+        ? lower
+        : { text: "This image doesn't contain any text!" };
+    }
+    const pickImage = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        base64: true, //return base64 data.
+        //this will allow the Vision API to read this image.
+      });
+      if (!result.cancelled) {
+          //const responseData = await onSubmit(result.base64);
+          console.log(result.base64);
+          callGoogleVisionAsync(result.base64);
+        }
+    };
   const switchCamera = () => {
     if (cameraType === 'back') {
       setCameraType('front')
@@ -63,9 +136,10 @@ export default function App() {
 
     let savePhoto = () => {
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+        console.log("hllo???");
         callGoogleVisionAsync(photo.base64);
         setPhoto(undefined);
-        console.log("hllo???");
+        
       });
     };
 
@@ -99,7 +173,11 @@ export default function App() {
         </TouchableOpacity>
 
       <View style={styles.buttonContainer}>
-      <ImagePickerComponent onSubmit={callGoogleVisionAsync} />
+
+      <TouchableOpacity onPress={pickImage}>
+        <Image source={gallery}/>
+       </TouchableOpacity>
+
       <TouchableOpacity style={styles.cameraBtn} onPress={takePic} />
       <TouchableOpacity style={styles.flipBtn} onPress={switchCamera} />
 

@@ -1,16 +1,24 @@
 import { config } from './config.js'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , Component } from 'react';
 import { Button, Image, View, Text , StyleSheet, TouchableOpacity} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationActions } from "react-navigation";
+
 
 
 const appHelper = require('./polyGroup');
 const API_KEY = config.API_KEY; 
 const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
 
+class helperFunctions extends Component {
+  constructor(props) {
+    super(props);
 
-function generateBody(image) {
+    this.state = {
+    };
+  }
+
+
+generateBody(image) {
   const body = {
     requests: [
       {
@@ -28,7 +36,7 @@ function generateBody(image) {
   };
   return body;
 }
-function parseData(data) 
+parseData(data) 
 {
   
   //find date
@@ -96,7 +104,7 @@ function parseData(data)
 
   //send to new screen
  
-  navigation.navigate('Save');
+  
  
   
 
@@ -104,7 +112,12 @@ function parseData(data)
 }
 
 
-async function callGoogleVisionAsync(image) {
+
+
+callGoogleVisionAsync = async (image) => {
+
+//async callGoogleVisionAsync(image) {
+
     const body = generateBody(image); //pass in our image for the payload
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -117,6 +130,7 @@ async function callGoogleVisionAsync(image) {
     const result = await response.json();
 
     console.log(result);
+    //this.props.navigation.navigate("Save", {data: data});
 
     const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
 
@@ -132,5 +146,6 @@ async function callGoogleVisionAsync(image) {
       ? lower
       : { text: "This image doesn't contain any text!" };
   }
+}
 
-  export default callGoogleVisionAsync;
+  export default helperFunctions;
