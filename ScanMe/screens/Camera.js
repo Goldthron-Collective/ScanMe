@@ -79,19 +79,14 @@ export default function App({navigation}) {
         body: JSON.stringify(body),
       });
       const result = await response.json();
-  
-      console.log(result);
-      
-      //, {data: data}
-  
+
       const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
   
-      const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase());
-
-      console.log(lower);
+      const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
+    
   
       navigation.navigate("Save",{arrData: lower});
-     // parseData(lower);
+    
   
      
       
@@ -109,7 +104,8 @@ export default function App({navigation}) {
       });
       if (!result.cancelled) {
           //const responseData = await onSubmit(result.base64);
-          console.log(result.base64);
+          console.log("hello?");
+          console.log(result);
           callGoogleVisionAsync(result.base64);
         }
     };
