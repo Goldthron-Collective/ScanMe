@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, Button, Image , TouchableOpacity } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { Camera } from 'expo-camera';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -68,7 +70,6 @@ export default function App({navigation}) {
   }
   
   let callGoogleVisionAsync = async (image) => {
-   
       const body = generateBody(image); //pass in our image for the payload
       const response = await fetch(API_URL, {
         method: 'POST',
@@ -80,13 +81,21 @@ export default function App({navigation}) {
       });
       const result = await response.json();
 
+      
+
       const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
   
       const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
     
   
+      
+
+      try {
+        await AsyncStorage.setItem('@data',arrData);
+      } catch (error) {
+        // Error saving data
+      }
       navigation.navigate("Save",{arrData: lower});
-    
   
      
       
@@ -104,8 +113,8 @@ export default function App({navigation}) {
       });
       if (!result.cancelled) {
           //const responseData = await onSubmit(result.base64);
-          console.log("hello?");
-          console.log(result);
+          
+          console.log("sending to next screen.....");
           callGoogleVisionAsync(result.base64);
         }
     };
@@ -132,7 +141,7 @@ export default function App({navigation}) {
 
     let savePhoto = () => {
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-        console.log("hllo???");
+        
         callGoogleVisionAsync(photo.base64);
         setPhoto(undefined);
         

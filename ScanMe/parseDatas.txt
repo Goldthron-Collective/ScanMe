@@ -1,0 +1,10 @@
+date (of purchase)
+total amount 
+currency 
+name of company (could leave blank for user to fill out)
+
+VAT / tax / sub total 
+change 
+service charge
+
+each item (1 - 100)
