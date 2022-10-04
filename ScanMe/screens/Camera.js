@@ -91,11 +91,22 @@ export default function App({navigation}) {
       
 
       try {
-        await AsyncStorage.setItem('@data',arrData);
+        const jsonValue = JSON.stringify(lower)
+        await AsyncStorage.setItem('@data',jsonValue);
+        
+       
+
+
+
       } catch (error) {
+        console.log(error);
         // Error saving data
       }
       navigation.navigate("Save",{arrData: lower});
+
+
+
+      //this.props.navigation.navigate("Save", {arrData: lower})
   
      
       

@@ -1,7 +1,8 @@
 import React, { Component,useEffect,useState  } from "react";
-import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image  } from "react-native";
+import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList  } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { render } from "react-dom";
 
 
   /* 
@@ -11,92 +12,92 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
     find currency
     find money in total using currency 
     find each item and hashmap key/value pair for item/price
+    <Text style={styles.title}>{dates}</Text>
+          <Text style={styles.title}>{currencys}</Text>
+          <Text style={styles.title}>{totals}</Text>
+          <Text style={styles.title}>{changes}</Text> 
+          const [dates, setDate] = useState('');
+ const [currencys, setCurrency] = useState('');
+const [changes, setChange] = useState('');
+ const [totals, setTotal] = useState('');
 
   */
 
-
-
-export default function Save({route}){
-
-  
-
-  /*
- const [date, setDate] = useState('');
- const [currency, setCurrency] = useState('');
- const [change, setChange] = useState('');
- const [total, setTotal] = useState('');
-
-            <Text style={styles.title}>{date}</Text>
-          <Text style={styles.title}>{currency}</Text>
-          <Text style={styles.title}>{total}</Text>
-          <Text style={styles.title}>{change}</Text>
-*/
-  
-
-  
-  let data = route.params.arrData;
- 
-
-  useEffect(() => {
-
-    data = route.params.arrData;
-
-    _retrieveData();
-    getDate();
-});
-
-_retrieveData = async () => {
-  try {
-    const value = await AsyncStorage.getItem('@data');
-    if (value !== null) {
-      // We have data!!
-      console.log(value);
+class Save extends Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+        data: '',
+        date: 'date',
+        currency: '',
+        change: '',
+        total: '',
+        itemsLS: [],
+      };
     }
-  } catch (error) {
-    // Error retrieving data
-    console.log(error);
+
+async componentDidMount() {
+    this.unsubscribe = this.props.navigation.addListener("focus", () => {
+
+    this.setState({data: this.props.route.params.arrData }, () => {
+     
+      
+      
+      this.getDate();
+      this.getCurrency();
+      this.getChange();
+      this.getTotal();
+      this.getItems();
+    });
+   
+
+  });
   }
-};
-  function getDate()
-  {
+async componentWillUnmount() {
+  this.unsubscribe();
+}
+
+  getDate = async () => {
     const date1 = /\d{2}([\/.-])\d{2}\1\d{4}/;
     const date2 = /(?:^|\W)(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)(?:$|\W)/;
     var date = null;
-    //get the date
 
-    for(let i = 0; i < data.length; i++)
+    for(let i = 0; i < this.state.data.length; i++)
     {
-      date = data[i].match(date1);
+      date = this.state.data[i].match(date1);
       //console.log(date);
       if(date != null)
       {
-        date = data[i];
+        date = this.state.data[i];
         //data.splice(i,1);
         break;
       }
-      date = data[i].match(date2);
+      date = this.state.data[i].match(date2);
       //console.log(date);
       if(date != null)
       {
-        date = data[i];
+        date = this.state.data[i];
         //data.splice(i,1);
         break;
       }      
     }
     console.log("DATE == " + date);
-   
-    getCurrency();
-    //setDate(date);
+
+
+    this.setState({date: date}, () => {
+      console.log(" IT CHANGED ???");
+    });
+
 
   }
-  function getCurrency()
+  getCurrency = async () => 
   {
     const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
     var currency = null;
 
-    for(let i = 0; i < data.length; i++)
+    for(let i = 0; i < this.state.data.length; i++)
     {
-      currency = data[i].match(currencyRegex);
+      currency = this.state.data[i].match(currencyRegex);
      
       if(currency != null)
       {
@@ -105,80 +106,83 @@ _retrieveData = async () => {
       }
     }
     console.log("CURRENCY == " + currency[0]);
-    getChange();
+    this.setState({currency: currency[0]});
 
   }
-  function getChange()
+  getChange = async () => 
   {
-    /*
 
-    finding change (last thing)
-
-    */
     const change = /(?:^|\W)((change)|(change due))(?:$|\W)/;
     var changeMatch = null;
 
-    for (let i = 0; i < data.length; i++) 
+    for (let i = 0; i < this.state.data.length; i++) 
     {
-      changeMatch = data[i].match(change);
+      changeMatch = this.state.data[i].match(change);
       if(changeMatch != null)
       {
-        changeMatch  = data[i];
-        data.length = i;
+        changeMatch  = this.state.data[i];
+
+        this.state.data.length = i;
         break;
       }
     }
 
     changeMatch = String(changeMatch);  
-    var doublenumber = changeMatch.match(/(?<=^| )\d+\.\d+(?=$| )/g);
+    var doublenumber = changeMatch.match(/([+-]?\d+(\.\d+)?)/g);
     console.log("CHANGE == " + doublenumber);
-    getTotal();
+    this.setState({change: doublenumber});
+    
   }
-  function getTotal()
+  getTotal = async () => 
   {
-    /*
-
-    finding total (last thing)
-
-    */
     const total = /(?:^|\W)((balance)|(total)|(due)|(sub-total)|(sale)|(deficit))(?:$|\W)/;
     var totalMatch = null;
 
-    for (let i = 0; i < data.length; i++) 
+    for (let i = 0; i < this.state.data.length; i++) 
     {
-      totalMatch = data[i].match(total);
+      totalMatch = this.state.data[i].match(total);
       if(totalMatch != null)
       {
-        totalMatch  = data[i];
-        data.length = i;
+        totalMatch  = this.state.data[i];
+        this.state.data.length = i;
 
         break;
       }
     }
     
     totalMatch = String(totalMatch);  
-    var doublenumber = totalMatch.match(/(?<=^| )\d+\.\d+(?=$| )/g);
+    var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
     console.log("TOTAL == " + doublenumber);
-
-    getItems();
+    this.setState({total: doublenumber});
+    
   }
-  function getItems()
+  getItems = async () => 
   {
-    const items = [];
+    
 
     const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
     var currency = null;
+    var float = null;
+    var item = null;
+    const itemMap = new Map();
+
   
-    for(let i = 0; i < data.length; i++)
+    for(let i = 0; i < this.state.data.length; i++)
     {
-      currency = data[i].match(currencyRegex);
-      if(currency != null)
+      currency = this.state.data[i].match(currencyRegex);
+      float = this.state.data[i].match(/([+-]?[0-9]+[.][0-9]*([e][+-]?[0-9]+)?)/g);
+
+      if(currency != null || float != null)
       {
-        items.push(data[i]);
+        item = this.state.data[i].replace(float,'');
+        itemMap.set(item,float);
+       
       }
     }
+
+    this.setState({itemsLS: itemMap});
    
-    console.log(items);
+    console.log(itemMap);
 
     //convert array into hashmap (key == item name | value == cost)
     //all data sent to front end in the form of editable form and then once all good sent to database
@@ -187,17 +191,55 @@ _retrieveData = async () => {
   }
 
 
-
+render(){
     return (
       <View style={styles.container}>
 
-         
+        <Text style={styles.title}> 
+        {this.state.date}
+        </Text>
+
+        <Text style={styles.title}>
+          {this.state.currency}
+        </Text>
+
+        <Text style={styles.title}>
+          {this.state.change}
+        </Text>
+
+        <Text style={styles.title}>
+          {this.state.total}
+        </Text>
+
+        <FlatList
+          data={this.state.itemsLS}
+          renderItem={({ item }) => (
+              <Text>{item.item + " " +  item.float}</Text>
+
+          )}
+          //keyExtractor={(item, index) => item.user_id.toString()}
+        />
 
       </View>
     )
   
 }
-
+}
+export default Save;
+/*
+<TouchableOpacity
+                onPress={() =>
+                  this.props.navigation.navigate("Profile", {
+                    id: String(item.user_id),
+                  })
+                }
+                style={Style.buttonStyleDefault}
+              >
+                <Text style={Style.buttonText}>
+                  {item.user_givenname + " " + item.user_familyname}
+                </Text>
+              </TouchableOpacity>
+*/
 const styles = StyleSheet.create({
   container: {
     flex: 1,
