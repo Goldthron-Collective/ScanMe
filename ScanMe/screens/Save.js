@@ -32,7 +32,9 @@ class Save extends Component {
         currency: '',
         change: '',
         total: '',
-        itemsLS: [],
+        items: [],
+        itemPrice: [],
+        map: [],
       };
     }
 
@@ -121,7 +123,6 @@ async componentWillUnmount() {
       if(changeMatch != null)
       {
         changeMatch  = this.state.data[i];
-
         this.state.data.length = i;
         break;
       }
@@ -130,7 +131,7 @@ async componentWillUnmount() {
     changeMatch = String(changeMatch);  
     var doublenumber = changeMatch.match(/([+-]?\d+(\.\d+)?)/g);
     console.log("CHANGE == " + doublenumber);
-    this.setState({change: doublenumber});
+    this.setState({change: String(doublenumber)});
     
   }
   getTotal = async () => 
@@ -153,7 +154,7 @@ async componentWillUnmount() {
     totalMatch = String(totalMatch);  
     var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
     console.log("TOTAL == " + doublenumber);
-    this.setState({total: doublenumber});
+    this.setState({total: String(doublenumber)});
     
   }
   getItems = async () => 
@@ -164,7 +165,11 @@ async componentWillUnmount() {
     var currency = null;
     var float = null;
     var item = null;
-    const itemMap = new Map();
+    const items = []
+    const price = []
+    let j = 0;
+    const map = [];
+
 
   
     for(let i = 0; i < this.state.data.length; i++)
@@ -172,19 +177,24 @@ async componentWillUnmount() {
       currency = this.state.data[i].match(currencyRegex);
       float = this.state.data[i].match(/([+-]?[0-9]+[.][0-9]*([e][+-]?[0-9]+)?)/g);
 
+     
+      
+
       if(currency != null || float != null)
       {
-        item = this.state.data[i].replace(float,'');
-        itemMap.set(item,float);
+        
+        console.log(float);
+        item = String(this.state.data[i].replace(float,''));
+        map[j] = {ited: item ,price: float[0]};
+        j++;
+
+        
        
       }
     }
-
-    this.setState({itemsLS: itemMap});
+  
+    this.setState({map: map});
    
-    console.log(itemMap);
-
-    //convert array into hashmap (key == item name | value == cost)
     //all data sent to front end in the form of editable form and then once all good sent to database
       
 
@@ -195,30 +205,34 @@ render(){
     return (
       <View style={styles.container}>
 
-        <Text style={styles.title}> 
-        {this.state.date}
-        </Text>
+        
 
-        <Text style={styles.title}>
-          {this.state.currency}
-        </Text>
-
-        <Text style={styles.title}>
-          {this.state.change}
-        </Text>
-
-        <Text style={styles.title}>
-          {this.state.total}
-        </Text>
-
-        <FlatList
-          data={this.state.itemsLS}
-          renderItem={({ item }) => (
-              <Text>{item.item + " " +  item.float}</Text>
-
-          )}
-          //keyExtractor={(item, index) => item.user_id.toString()}
+        <TextInput
+          onChangeText={(date) => this.setState({ date })}
+          value={this.state.date}
         />
+
+        <TextInput
+          onChangeText={(currency) => this.setState({ currency })}
+          value={this.state.currency}
+        />
+
+        <TextInput
+          onChangeText={(change) => this.setState({ change })}
+          value={this.state.change}
+        />
+
+        <TextInput
+          onChangeText={(total) => this.setState({ total })}
+          value={this.state.total}
+        />
+
+      
+       
+
+      {this.state.map.map((item) => (
+        <Text key={item.ited}>{item.ited} {item.price}</Text>
+      ))} 
 
       </View>
     )
@@ -227,7 +241,21 @@ render(){
 }
 export default Save;
 /*
+ {this.state.items.map((item, key)=>(
+         <Text key={key}> { item } </Text>)
+         )}
 <TouchableOpacity
+<Text>{item.price}</Text>
+        <FlatList
+        
+          data={this.state.itemsLS}
+          renderItem={({ item }) => (
+            <View>
+            
+              </View>
+          )}
+          keyExtractor={(item, index) => item.item}
+        />
                 onPress={() =>
                   this.props.navigation.navigate("Profile", {
                     id: String(item.user_id),
@@ -237,7 +265,9 @@ export default Save;
               >
                 <Text style={Style.buttonText}>
                   {item.user_givenname + " " + item.user_familyname}
-                </Text>
+                </Text>]
+                 {this.state.items}
+         {this.state.itemPrice}
               </TouchableOpacity>
 */
 const styles = StyleSheet.create({
