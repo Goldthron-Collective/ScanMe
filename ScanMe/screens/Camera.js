@@ -81,7 +81,7 @@ export default function App({navigation}) {
       });
       const result = await response.json();
 
-      
+      console.log("hello?");
 
       const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
   

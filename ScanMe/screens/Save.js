@@ -1,34 +1,15 @@
 import React, { Component,useEffect,useState  } from "react";
-import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList  } from "react-native";
+import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList ,Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { render } from "react-dom";
 
-
-  /* 
-
-    find date
-    find total and remove everthing after that in array
-    find currency
-    find money in total using currency 
-    find each item and hashmap key/value pair for item/price
-    <Text style={styles.title}>{dates}</Text>
-          <Text style={styles.title}>{currencys}</Text>
-          <Text style={styles.title}>{totals}</Text>
-          <Text style={styles.title}>{changes}</Text> 
-          const [dates, setDate] = useState('');
- const [currencys, setCurrency] = useState('');
-const [changes, setChange] = useState('');
- const [totals, setTotal] = useState('');
-
-  */
 
 class Save extends Component {
   constructor(props) {
     super(props);
       this.state = {
         data: '',
-        date: 'date',
+        date: '',
         currency: '',
         change: '',
         total: '',
@@ -42,9 +23,6 @@ async componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener("focus", () => {
 
     this.setState({data: this.props.route.params.arrData }, () => {
-     
-      
-      
       this.getDate();
       this.getCurrency();
       this.getChange();
@@ -199,13 +177,21 @@ async componentWillUnmount() {
       
 
   }
+  sendToDB = async () => 
+  {
 
+
+    //this.props.navigation.navigate("History");
+
+  }
 
 render(){
     return (
+      
       <View style={styles.container}>
 
-        
+      <Text style={styles.title}>Edit & Save</Text>
+      
 
         <TextInput
           onChangeText={(date) => this.setState({ date })}
@@ -227,12 +213,37 @@ render(){
           value={this.state.total}
         />
 
-      
-       
+     
 
-      {this.state.map.map((item) => (
-        <Text key={item.ited}>{item.ited} {item.price}</Text>
-      ))} 
+        <TextInput
+        
+          onChangeText={(total) => this.setState({ total })}
+          value={this.state.total}
+        />
+
+    
+
+      <TextInput
+        onChangeText={(map) => this.setState({ map })}
+        value={this.state.map.map((item) => (<Text key={item.ited}>{item.ited} {item.price}</Text>))}
+      />
+
+      {this.state.map.map((item) => (<Text key={item.ited}>{item.ited} {item.price}</Text>))}
+      
+
+      <Button
+        title="Confirm"
+        color="#00fa00"
+        onPress={this.sendToDB()}
+      />
+
+      <Button
+        title="Cancel"
+        color="#ff0000"
+        //onPress={this.props.navigation.navigate("Camera")}
+      />
+
+
 
       </View>
     )
@@ -241,44 +252,28 @@ render(){
 }
 export default Save;
 /*
- {this.state.items.map((item, key)=>(
-         <Text key={key}> { item } </Text>)
-         )}
-<TouchableOpacity
-<Text>{item.price}</Text>
-        <FlatList
-        
-          data={this.state.itemsLS}
-          renderItem={({ item }) => (
-            <View>
-            
-              </View>
-          )}
-          keyExtractor={(item, index) => item.item}
+ 
+      {this.state.map.map((item) => (
+        <TextInput
+          key={item.ited}
+          onChangeText={(item) => this.setState({ item })}
+          value={item.ited + item.price}
         />
-                onPress={() =>
-                  this.props.navigation.navigate("Profile", {
-                    id: String(item.user_id),
-                  })
-                }
-                style={Style.buttonStyleDefault}
-              >
-                <Text style={Style.buttonText}>
-                  {item.user_givenname + " " + item.user_familyname}
-                </Text>]
-                 {this.state.items}
-         {this.state.itemPrice}
-              </TouchableOpacity>
+      ))} 
 */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    
     alignItems: 'center',
     justifyContent: 'center',
+  
+
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
+    top: 0,
   }
 });
 
