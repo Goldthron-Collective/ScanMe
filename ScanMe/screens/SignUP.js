@@ -13,12 +13,15 @@ class SignUP extends Component {
       last_name: "",
       email: "",
       password: "",
+      confirmPw : "",
       errorTxt: "",
     };
   }
 
-  /*
+  
   signup = () => {
+
+    
     const regEmail = new RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
     const regName = new RegExp("^(?=.{1,40}$)[a-zA-Z]+(?:[-'s][a-zA-Z]+)*$");
 
@@ -29,15 +32,47 @@ class SignUP extends Component {
     let first = regName.test(this.state.first_name);
     let last = regName.test(this.state.last_name);
 
-    if (emailReg == false) {
+    if (emailReg == false || this.state.email.length == 0) {
       return this.setState({ errorTxt: "Invalid Email" });
-    } else if (passLen == false) {
+    } else if (passLen == false || this.state.password.length == 0) {
       return this.setState({errorTxt: "Invalid Password"});
-    } else if (first == false) {
+    } else if (first == false || this.state.first_name.length == 0) {
       return this.setState({ errorTxt: "Invalid First Name" });
-    } else if (last == false) {
+    } else if (last == false || this.state.last_name.length == 0) {
       return this.setState({ errorTxt: "Invalid Last Name" });
     }
+
+    var InsertAPIURL = "http://10.0.2.2:80/SQL/SignUp.php";   //API to render signup
+
+    var headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+    
+    var Data ={
+      email: this.state.email,
+      password: this.state.password,
+      first_name : this.state.first_name,
+      last_name : this.state.last_name
+    };
+
+  // FETCH func ------------------------------------
+  fetch(InsertAPIURL,{
+      method:'POST',
+      headers:headers,
+      body: JSON.stringify(Data) //convert data to JSON
+  })
+  .then((response)=>response.json()) //check response type of API (CHECK OUTPUT OF DATA IS IN JSON)
+  .then((response)=>{
+    alert(response[0].Message);       // If data is in JSON => Display alert msg
+    () =>  this.props.navigation.navigate('Login'); //Navigate to next screen if authentications are valid
+  })
+  .catch((error)=>{
+      alert("Error Occured" + error);
+  })
+
+
+  /*
 
     return fetch("http://localhost:3333/api/1.0.0/user", {
       method: "POST",
@@ -66,8 +101,10 @@ class SignUP extends Component {
       .catch((error) => {
         console.log(error);
       });
+      */
+      
   };
-  */
+  
 
   render() {
     return (

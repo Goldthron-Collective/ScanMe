@@ -17,14 +17,24 @@ const Tab = createBottomTabNavigator();
 
 class index extends Component {
 
-    /*
+  render() {
+    return (
+       <NavigationContainer>
+       <Tab.Navigator 
+       initialRouteName="Login"
+       options={{headerShown: false}}>
+         <Tab.Screen name="Homes" component={this.Homes} options={{tabBarStyle: { display: "none" },headerShown: false}} />
+         <Tab.Screen name="Login" component={Login} options={{tabBarStyle: { display: "none" },headerShown: false }}/>
+         <Tab.Screen name="SignUP" component={SignUP}  options={{tabBarStyle: { display: "none" },headerShown: false }}/>
+       </Tab.Navigator>
+       </NavigationContainer>
+    );    
+         
+   }
+
   Homes = () => 
   {
-
-  }
-*/
-render() {
-return(
+  return(
     <NavigationContainer>
     <Tab.Navigator 
     initialRouteName="Camera"
@@ -58,22 +68,9 @@ return(
     </NavigationContainer>
     );
 }
-/*
-{
- return (
-    <NavigationContainer>
-    <Tab.Navigator 
-    initialRouteName="Login"
-    options={{headerShown: false}}>
-      <Tab.Screen name="Homes" component={this.Homes} options={{tabBarStyle: { display: "none" },headerShown: false}} />
-      <Tab.Screen name="Login" component={Login} options={{tabBarStyle: { display: "none" },headerShown: false }}/>
-      <Tab.Screen name="SignUP" component={SignUP}  options={{tabBarStyle: { display: "none" },headerShown: false }}/>
-    </Tab.Navigator>
-    </NavigationContainer>
- );    
-      
-}
-*/
+
+
+
 
 }
 export default index

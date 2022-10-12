@@ -15,7 +15,11 @@ class Login extends Component {
       errorTxt: "",
     };
   }
-  /*login = async () => {
+  login = async () => {
+
+
+    
+    /*
 
     return fetch("http://localhost:3333/api/1.0.0/login", {
       method: "POST",
@@ -52,8 +56,9 @@ class Login extends Component {
       .catch((error) => {
         console.error(error);
       });
+      */
   };
-  */
+  
 
   render() {
     return (

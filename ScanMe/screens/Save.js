@@ -19,6 +19,8 @@ class Save extends Component {
       };
     }
 
+
+
 async componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener("focus", () => {
 
@@ -179,9 +181,13 @@ async componentWillUnmount() {
   }
   sendToDB = async () => 
   {
+    //send all props to server in correct order
+    
 
 
-    //this.props.navigation.navigate("History");
+   
+
+    () =>  this.props.navigation.navigate('History')
 
   }
 
@@ -223,24 +229,38 @@ render(){
 
     
 
-      <TextInput
-        onChangeText={(map) => this.setState({ map })}
-        value={this.state.map.map((item) => (<Text key={item.ited}>{item.ited} {item.price}</Text>))}
-      />
+      
 
-      {this.state.map.map((item) => (<Text key={item.ited}>{item.ited} {item.price}</Text>))}
+     
+
+      <FlatList
+          data={this.state.map}
+          keyExtractor={(item) => item.pirce}
+          renderItem={({ item }) => {
+            return (
+              <TextInput 
+              onChangeText={(item) => this.setState({ item })}
+              value={this.state.map}>
+                {item.ited}
+                {item.price}
+              </TextInput>
+            )
+ 
+          }}
+          
+        />
       
 
       <Button
         title="Confirm"
         color="#00fa00"
-        onPress={this.sendToDB()}
+        onPress={this.sendToDB}
       />
 
       <Button
         title="Cancel"
         color="#ff0000"
-        //onPress={this.props.navigation.navigate("Camera")}
+        onPress={() =>  this.props.navigation.navigate('Camera')}
       />
 
 
@@ -252,14 +272,13 @@ render(){
 }
 export default Save;
 /*
- 
-      {this.state.map.map((item) => (
-        <TextInput
-          key={item.ited}
-          onChangeText={(item) => this.setState({ item })}
-          value={item.ited + item.price}
-        />
-      ))} 
+ {this.state.map.map((item) => (<Text key={item.ited}>{item.ited} {item.price}</Text>))}
+  <View>
+                <Text>
+                  {item.ited + " " + item.price}
+                </Text>
+              
+            </View>
 */
 const styles = StyleSheet.create({
   container: {
