@@ -4,6 +4,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Style from "./Style";
 import logo from "./logo.png";
+import {SERVER_IP} from "../serverConnect"
+
 
 class Login extends Component {
   constructor(props) {
@@ -17,21 +19,18 @@ class Login extends Component {
   }
   login = async () => {
 
+console.log(SERVER_IP+"login?email="+this.state.email+"&password="+this.state.password);
+    fetch(SERVER_IP+"login?email="+this.state.email+"&password="+this.state.password)
+      .then(async(response) => {
+        console.log(response);
 
-    
-    /*
-
-    return fetch("http://localhost:3333/api/1.0.0/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.password,
-      })
-    })
-      .then((response) => {
         if (response.status === 200) {
-          return response.json();
+         // return response.json();
+          await AsyncStorage.setItem("@id", String(responseJson.id));
+
+          this.props.navigation.navigate("Homes", { screen: "Profile" });
+
+
         } else if (response.status === 400) {
           return this.setState({ errorTxt: "Invalid Email or Password" });
           //used display the resposnes from the server
@@ -40,23 +39,12 @@ class Login extends Component {
           //each error code returns a diffrent response to the user
         } else {
           return this.setState({ errorTxt: "Something went wrong" });
-          throw "Something went wrong";
         }
-      })
-
-      .then(async (responseJson) => {
-        await AsyncStorage.multiSet([
-          ["@session_token", responseJson.token],
-          ["@id", String(responseJson.id)],
-        ]);
-        //multi-set this way two keys can be set at once
-        this.props.navigation.navigate("Homes", { screen: "Profile" });
-        //navigate to the nested stack which contains the app
       })
       .catch((error) => {
         console.error(error);
       });
-      */
+      
   };
   
 
@@ -76,6 +64,7 @@ class Login extends Component {
             style={Style.inputBox}
             onChangeText={(value) => this.setState({ email: value })}
             value={this.state.email}
+            placeholder="Email"
           />
 
           <TextInput
@@ -83,6 +72,7 @@ class Login extends Component {
             secureTextEntry={true}
             onChangeText={(value) => this.setState({ password: value })}
             value={this.state.password}
+            placeholder="Password"
           />
 
           <Text style={Style.errorText}>{this.state.errorTxt}</Text>

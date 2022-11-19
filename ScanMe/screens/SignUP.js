@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TextInput, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Style from "./Style";
 import logo from "./logo.png";
+import { SERVER_IP } from "../serverConnect"
 
 class SignUP extends Component {
   constructor(props) {
@@ -26,15 +27,12 @@ class SignUP extends Component {
     const regName = new RegExp("^(?=.{1,40}$)[a-zA-Z]+(?:[-'s][a-zA-Z]+)*$");
 
     let emailReg = regEmail.test(this.state.email);
-
-    let passLen = this.state.password.length > 5;
-
     let first = regName.test(this.state.first_name);
     let last = regName.test(this.state.last_name);
 
     if (emailReg == false || this.state.email.length == 0) {
       return this.setState({ errorTxt: "Invalid Email" });
-    } else if (passLen == false || this.state.password.length == 0) {
+    } else if (this.state.password.length <= 5) {
       return this.setState({errorTxt: "Invalid Password"});
     } else if (first == false || this.state.first_name.length == 0) {
       return this.setState({ errorTxt: "Invalid First Name" });
@@ -42,66 +40,18 @@ class SignUP extends Component {
       return this.setState({ errorTxt: "Invalid Last Name" });
     }
 
-    var InsertAPIURL = "http://10.0.2.2:80/SQL/SignUp.php";   //API to render signup
 
-    var headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    };
-    
-    var Data ={
-      email: this.state.email,
-      password: this.state.password,
-      first_name : this.state.first_name,
-      last_name : this.state.last_name
-    };
 
-  // FETCH func ------------------------------------
-  fetch(InsertAPIURL,{
-      method:'POST',
-      headers:headers,
-      body: JSON.stringify(Data) //convert data to JSON
-  })
-  .then((response)=>response.json()) //check response type of API (CHECK OUTPUT OF DATA IS IN JSON)
+  fetch(SERVER_IP+"signup?email="+this.state.email+"&password="+this.state.password+"&first_name="+ this.state.first_name+"&last_name=+"+this.state.last_name) 
   .then((response)=>{
-    alert(response[0].Message);       // If data is in JSON => Display alert msg
-    () =>  this.props.navigation.navigate('Login'); //Navigate to next screen if authentications are valid
+    console.log(response);
+     
+   // () =>  this.props.navigation.navigate('');
   })
   .catch((error)=>{
       alert("Error Occured" + error);
   })
 
-
-  /*
-
-    return fetch("http://localhost:3333/api/1.0.0/user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        first_name: this.state.first_name,
-        last_name: this.state.last_name,
-        email: this.state.email,
-        password: this.state.password,
-      }),
-    })
-      .then((response) => {
-        if (response.status === 201) {
-          this.props.navigation.navigate("Login");
-        } else if (response.status === 400) {
-          return this.setState({ errorTxt: "Invalid Data or Email Already In Use" });
-        } else if (response.status == 500) {
-          this.setState({ errorTxt: "Server Not Responding" });
-        } else {
-          this.setState({ errorTxt: "Something went wrong" });
-          throw "Something went wrong";
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-      */
       
   };
   
