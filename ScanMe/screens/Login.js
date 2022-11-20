@@ -19,23 +19,34 @@ class Login extends Component {
   }
   login = async () => {
 
-console.log(SERVER_IP+"login?email="+this.state.email+"&password="+this.state.password);
-    fetch(SERVER_IP+"login?email="+this.state.email+"&password="+this.state.password)
+    let email = this.state.email.toLowerCase();
+    let pass = this.state.password;
+
+
+    if(email || pass == "")
+    {
+
+    }
+    
+    fetch(SERVER_IP+"login?email="+email+"&password="+pass)
       .then(async(response) => {
         console.log(response);
+  
+        if (response.status == 200) {
+           response.json().then(async(json) => {
+            console.log(json[0].id);
+            await AsyncStorage.setItem("@id", String(json[0].id));
+            console.log("sucess")
+            this.props.navigation.navigate("Homes");
+           })
+          
 
-        if (response.status === 200) {
-         // return response.json();
-          await AsyncStorage.setItem("@id", String(responseJson.id));
-
-          this.props.navigation.navigate("Homes", { screen: "Profile" });
-
-
-        } else if (response.status === 400) {
-          return this.setState({ errorTxt: "Invalid Email or Password" });
+         
+        } else if (response.status == 403) {
+          return this.setState({ errorTxt: "Email doesnt Exist" });
           //used display the resposnes from the server
-        } else if (response.status == 500) {
-          return this.setState({ errorTxt: "Server Not Eesponding" });
+        } else if (response.status == 403) {
+          return this.setState({ errorTxt: "Invalid Password" });
           //each error code returns a diffrent response to the user
         } else {
           return this.setState({ errorTxt: "Something went wrong" });
@@ -50,15 +61,7 @@ console.log(SERVER_IP+"login?email="+this.state.email+"&password="+this.state.pa
 
   render() {
     return (
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 100,
-        }}
-      >
-        <Image style={{ height: 200, width: 200 }} source={logo} />
-
+     
         <View style={Style.welcome}>
           <TextInput
             style={Style.inputBox}
@@ -93,7 +96,7 @@ console.log(SERVER_IP+"login?email="+this.state.email+"&password="+this.state.pa
             <Text style={Style.buttonText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
-      </View>
+    
     );
   }
 }

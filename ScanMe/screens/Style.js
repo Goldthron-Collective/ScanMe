@@ -31,15 +31,15 @@ export default StyleSheet.create({
     backgroundColor: 'dodgerblue'
   },
   buttonStyleDefault:
-{
+  {
 
-  borderRadius: 30,
-  padding: 10,
-  marginHorizontal: 15,
-  marginVertical: 10,
-  backgroundColor: 'dodgerblue'
+    borderRadius: 30,
+    padding: 25,
+    marginHorizontal: 15,
+    marginVertical: 10,
+    backgroundColor: 'dodgerblue'
 
-},
+  },
   inputBox: {
     padding: 10,
     borderWidth: 1,

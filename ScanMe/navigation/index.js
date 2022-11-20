@@ -11,6 +11,7 @@ import Login from '../screens/Login'
 import Save from '../screens/Save'
 import Camera from '../screens/Camera'
 import History from '../screens/History'
+import Settings from '../screens/Settings'
 
 
 const Tab = createBottomTabNavigator();
@@ -35,8 +36,9 @@ class index extends Component {
   Homes = () => 
   {
   return(
-    <NavigationContainer>
+    
     <Tab.Navigator 
+
     initialRouteName="Camera"
     
     
@@ -50,22 +52,45 @@ class index extends Component {
         : undefined,
 
     })}>  
+      <Tab.Screen name="Settings" component={Settings}
+       options={{
+        tabBarShowLabel: false,
+        headerShown: false,
+        tabBarIcon: () => {
+          return <Image style={{height: 45, width: 45}} source={require('../assets/images/settings.png')} />
+        }
+      }}
+       
+       />
+
       <Tab.Screen name="Camera" component={Camera}  
-      options={{headerShown: false}}//, tabBarIcon: ({size,focused,color}) => {return (<Image style={{height:25,width:25}}source={require('./assets/profile.png')}/>)}
+       options={{
+        tabBarShowLabel: false,
+        headerShown: false,
+        tabBarIcon: () => {
+          return <Image style={{height: 45, width: 45}} source={require('../assets/images/camera.png')} />
+        }
+      }}
+      //, tabBarIcon: ({size,focused,color}) => {return (<Image style={{height:25,width:25}}source={require('./assets/profile.png')}/>)}
       listeners={({ navigation, route }) => ({
     tabPress: e => {
       // Prevent default action
       e.preventDefault();
-
       navigation.navigate('Camera')
     },})}/>
 
-      <Tab.Screen name="History" component={History} options={{headerShown: false}} />
- 
+      <Tab.Screen name="History" component={History} 
+       options={{
+        tabBarShowLabel: false,
+        headerShown: false,
+        tabBarIcon: () => {
+          return <Image style={{height: 45, width: 45}} source={require('../assets/images/history.png')} />
+        }
+      }}/>
 
       <Tab.Screen name="Save" component={Save} options={{headerShown: false}} />
     </Tab.Navigator>
-    </NavigationContainer>
+    
     );
 }
 

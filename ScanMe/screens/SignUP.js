@@ -58,15 +58,10 @@ class SignUP extends Component {
 
   render() {
     return (
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 100,
-        }}
-      >
-        <Image style={{ height: 200, width: 200 }} source={logo} />
+     
+       
         <View style={Style.welcome}>
+           
           <TextInput
             placeholder="Enter your first name..."
             onChangeText={(first_name) => this.setState({ first_name })}
@@ -107,7 +102,7 @@ class SignUP extends Component {
             <Text style={Style.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>
-      </View>
+     
     );
   }
 }
