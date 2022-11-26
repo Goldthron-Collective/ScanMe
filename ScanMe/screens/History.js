@@ -12,11 +12,30 @@ class History extends Component {
     
     };
   }
-  userCheck = async () => {
-   
-    
+  async componentDidMount() {
+    this.unsubscribe = this.props.navigation.addListener("focus", () => {
 
-  };
+    this.checkLoggedIn()
+    this.loadHistory()
+   
+
+  });
+  }
+async componentWillUnmount() {
+  this.unsubscribe();
+}
+checkLoggedIn = async () => {
+  const id = await AsyncStorage.getItem("@id");
+  console.log(id);
+
+  if (id == null) {
+    this.props.navigation.navigate("Login");
+  }
+};
+loadHistory = async () => {
+  
+};
+
 render() {
   return (
     <View style={styles.container}>

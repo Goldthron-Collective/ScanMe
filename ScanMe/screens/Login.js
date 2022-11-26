@@ -36,7 +36,7 @@ class Login extends Component {
            response.json().then(async(json) => {
             console.log(json[0].id);
             await AsyncStorage.setItem("@id", String(json[0].id));
-            console.log("sucess")
+            
             this.props.navigation.navigate("Homes");
            })
           

@@ -2,6 +2,7 @@ import React, { Component,useEffect,useState  } from "react";
 import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList ,Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SERVER_IP} from "../serverConnect"
 
 
 class Save extends Component {
@@ -68,6 +69,7 @@ async componentWillUnmount() {
 
     this.setState({date: date}, () => {
       console.log(" IT CHANGED ???");
+      console.log(this.state.date);
     });
 
 
@@ -144,11 +146,9 @@ async componentWillUnmount() {
     const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
     var currency = null;
     var float = null;
-    var item = null;
-    const items = []
-    const price = []
     let j = 0;
     const map = [];
+    let curItem;
 
 
   
@@ -164,8 +164,8 @@ async componentWillUnmount() {
       {
         
         console.log(float);
-        item = String(this.state.data[i].replace(float,''));
-        map[j] = {ited: item ,price: float[0]};
+        curItem = String(this.state.data[i].replace(float,''));
+        map[j] = {item: curItem ,price: float[0]};
         j++;
 
         
@@ -181,57 +181,72 @@ async componentWillUnmount() {
   }
   sendToDB = async () => 
   {
-    //send all props to server in correct order
-    
 
+    const id = await AsyncStorage.getItem("@id");
+    console.log(this.state.date);
 
-   
+    fetch(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map))
+    .then(async(response) => {
+      console.log(response);
 
-    () =>  this.props.navigation.navigate('History')
+      if (response.status == 200) {
+         response.json().then(async(json) => {
+            this.props.navigation.navigate("History");
+         })
+        
 
+       
+      } else if (response.status == 403) {
+        return this.setState({ errorTxt: "Email doesnt Exist" });
+        //used display the resposnes from the server
+      } else if (response.status == 403) {
+        return this.setState({ errorTxt: "Invalid Password" });
+        //each error code returns a diffrent response to the user
+      } else {
+        return this.setState({ errorTxt: "Something went wrong" });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
 render(){
     return (
       
-      <View style={styles.container}>
+      <ScrollView style={{paddingHorizontal: 30,paddingTop: 50}}>
 
       <Text style={styles.title}>Edit & Save</Text>
       
-
+       <Text>{"Date Of Purchase: "}</Text>
         <TextInput
           onChangeText={(date) => this.setState({ date })}
           value={this.state.date}
+          style={styles.input}
         />
 
+        <Text>{"Currency Type: "}</Text>
         <TextInput
           onChangeText={(currency) => this.setState({ currency })}
           value={this.state.currency}
+          style={styles.input}
         />
 
+        <Text>{"Total: "}</Text>
+        <TextInput
+          onChangeText={(total) => this.setState({ total })}
+          value={this.state.total}
+          style={styles.input}
+        />
+
+        <Text>{"Change: "}</Text>
         <TextInput
           onChangeText={(change) => this.setState({ change })}
           value={this.state.change}
+          style={styles.input}
         />
 
-        <TextInput
-          onChangeText={(total) => this.setState({ total })}
-          value={this.state.total}
-        />
-
-     
-
-        <TextInput
-        
-          onChangeText={(total) => this.setState({ total })}
-          value={this.state.total}
-        />
-
-    
-
-      
-
-     
+      <Text>{"Items Purchased: "}</Text>
 
       <FlatList
           data={this.state.map}
@@ -239,9 +254,10 @@ render(){
           renderItem={({ item }) => {
             return (
               <TextInput 
+              style={styles.input}
               onChangeText={(item) => this.setState({ item })}
               value={this.state.map}>
-                {item.ited}
+                {item.item}
                 {item.price}
               </TextInput>
             )
@@ -265,25 +281,16 @@ render(){
 
 
 
-      </View>
+      </ScrollView>
     )
   
 }
 }
 export default Save;
-/*
- {this.state.map.map((item) => (<Text key={item.ited}>{item.ited} {item.price}</Text>))}
-  <View>
-                <Text>
-                  {item.ited + " " + item.price}
-                </Text>
-              
-            </View>
-*/
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    
     alignItems: 'center',
     justifyContent: 'center',
   
@@ -293,6 +300,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     top: 0,
+  },
+  input:{
+    height: 40,
+    borderWidth: 1,
+    color: "black",
+    width: "95%",
+    padding: 10,
+    margin: 10,
   }
 });
 

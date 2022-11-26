@@ -13,12 +13,34 @@ class SignUP extends Component {
    
     };
   }
+  async componentDidMount() {
+    this.unsubscribe = this.props.navigation.addListener("focus", () => {
+
+    this.checkLoggedIn()
+   
+
+  });
+  }
+async componentWillUnmount() {
+  this.unsubscribe();
+}
 
   
-  logout = () => {
+  logout = async () => {
 
+    await AsyncStorage.removeItem("@id").then(
+      () => this.props.navigation.navigate("Login")
+    );
+    
+  };
 
-      
+  checkLoggedIn = async () => {
+    const id = await AsyncStorage.getItem("@id");
+    console.log(id);
+
+    if (id == null) {
+      this.props.navigation.navigate("Login");
+    }
   };
   
 
@@ -29,7 +51,7 @@ class SignUP extends Component {
         <View style={Style.welcome}>
            
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Login")}
+            onPress={this.logout()}
             style={Style.buttonStyleDefault}
           >
             <Text style={Style.buttonText}>Logout</Text>
