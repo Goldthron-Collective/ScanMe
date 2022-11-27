@@ -9,7 +9,7 @@ class Save extends Component {
   constructor(props) {
     super(props);
       this.state = {
-        data: '',
+        data: this.props.route.params.arrData,
         date: '',
         currency: '',
         change: '',
@@ -17,6 +17,8 @@ class Save extends Component {
         items: [],
         itemPrice: [],
         map: [],
+        title: "Untitled Recipt",
+        image: this.props.route.params.imageData,
       };
     }
 
@@ -24,15 +26,11 @@ class Save extends Component {
 
 async componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener("focus", () => {
-
-    this.setState({data: this.props.route.params.arrData }, () => {
       this.getDate();
       this.getCurrency();
       this.getChange();
       this.getTotal();
       this.getItems();
-    });
-   
 
   });
   }
@@ -179,20 +177,64 @@ async componentWillUnmount() {
       
 
   }
+  validateSave = async () => 
+  {
+
+    //this.state.title
+    //this.state.date
+    //this.state.currency
+   // this.state.total
+   // this.state.change
+    //this.state.map
+
+    this.sendToDB()
+  }
+
   sendToDB = async () => 
   {
 
     const id = await AsyncStorage.getItem("@id");
-    console.log(this.state.date);
+    
+    console.log(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title+"&images="+this.state.image);
 
-    fetch(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map))
+    let res = await fetch(this.state.image);
+    let blob = await res.blob();
+
+    return fetch(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title, {
+      method: "POST",
+      headers: { "Content-Type": "image/png"},
+      body: blob,
+    })
+      .then((response) => {
+        console.log(response);
+
+        if (response.status == 200) {
+        this.props.navigation.navigate("History");
+      
+        } else if (response.status == 403) {
+          return this.setState({ errorTxt: "Email doesnt Exist" });
+          //used display the resposnes from the server
+        } else if (response.status == 403) {
+          return this.setState({ errorTxt: "Invalid Password" });
+          //each error code returns a diffrent response to the user
+        } else {
+          return this.setState({ errorTxt: "Something went wrong" });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    
+  
+  /*
+
+    fetch(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title+"&images="+this.state.image)
     .then(async(response) => {
       console.log(response);
 
       if (response.status == 200) {
-         response.json().then(async(json) => {
-            this.props.navigation.navigate("History");
-         })
+      this.props.navigation.navigate("History");
+        
         
 
        
@@ -209,6 +251,7 @@ async componentWillUnmount() {
     .catch((error) => {
       console.error(error);
     });
+    */
   }
 
 render(){
@@ -217,6 +260,13 @@ render(){
       <ScrollView style={{paddingHorizontal: 30,paddingTop: 50}}>
 
       <Text style={styles.title}>Edit & Save</Text>
+
+      <Text>{"Title: "}</Text>
+        <TextInput
+          onChangeText={(title) => this.setState({ title })}
+          value={this.state.title}
+          style={styles.input}
+        />
       
        <Text>{"Date Of Purchase: "}</Text>
         <TextInput
@@ -270,7 +320,7 @@ render(){
       <Button
         title="Confirm"
         color="#00fa00"
-        onPress={this.sendToDB}
+        onPress={this.validateSave}
       />
 
       <Button

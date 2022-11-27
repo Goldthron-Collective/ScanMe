@@ -86,27 +86,9 @@ export default function App({navigation}) {
       const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
   
       const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
-    
-  
       
+      navigation.navigate("Save",{arrData: lower,imageData: image});
 
-      try {
-        const jsonValue = JSON.stringify(lower)
-        await AsyncStorage.setItem('@data',jsonValue);
-        
-       
-
-
-
-      } catch (error) {
-        console.log(error);
-        // Error saving data
-      }
-      navigation.navigate("Save",{arrData: lower});
-
-
-
-      //this.props.navigation.navigate("Save", {arrData: lower})
   
      
       
@@ -126,8 +108,10 @@ export default function App({navigation}) {
           //const responseData = await onSubmit(result.base64);
           
           console.log("sending to next screen.....");
+      
           callGoogleVisionAsync(result.base64);
         }
+        console.log(result.base64);
     };
   const switchCamera = () => {
     if (cameraType === 'back') {
