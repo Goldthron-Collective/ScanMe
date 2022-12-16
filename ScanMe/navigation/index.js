@@ -12,6 +12,7 @@ import Save from '../screens/Save'
 import Camera from '../screens/Camera'
 import History from '../screens/History'
 import Settings from '../screens/Settings'
+import ViewHistory from '../screens/MoreHistory'
 
 
 const Tab = createBottomTabNavigator();
@@ -45,6 +46,7 @@ class index extends Component {
     screenOptions={({ route }) => ({
       tabBarButton: [
         "Save",
+        "MoreHistory",
       ].includes(route.name)
         ? () => {
             return null;
@@ -89,6 +91,7 @@ class index extends Component {
       }}/>
 
       <Tab.Screen name="Save" component={Save} options={{headerShown: false}} />
+      <Tab.Screen name="MoreHistory" component={ViewHistory} options={{headerShown: false}} />
     </Tab.Navigator>
     
     );

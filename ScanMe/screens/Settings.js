@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, Text, ScrollView, TextInput, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Style from "./Style";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
 
 class SignUP extends Component {

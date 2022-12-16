@@ -1,18 +1,25 @@
 import React, { Component } from "react";
-import { View, Text, FlatList, TouchableOpacity ,StyleSheet } from "react-native";
+import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList ,Button } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
 
 
-class History extends Component {
+class MoreHistory extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       id : "",
       errorTxt: "",
-      data: "",
+      items: "",
+      date: "",
+      title: "",
+      currency: "",
+      total: "",
+      change: "",
+
+
     };
   }
   async componentDidMount() {
@@ -28,6 +35,7 @@ async componentWillUnmount() {
 }
 
 loadHistory = async () => {
+
   const id = await AsyncStorage.getItem("@id");
 
   this.setState({id: id});
@@ -37,13 +45,14 @@ loadHistory = async () => {
   }
 
   
-  fetch(SERVER_IP+"getAllReceipts?id="+id)
+  fetch(SERVER_IP+"getByRecId?id="+id+"&recid="+this.state.recID)
   .then(async(response) => {
   
     if (response.status == 200) {
        response.json().then(async(json) => {
-
-        this.setState({data: json});
+        console.log(json);
+        console.log(json.title);
+        //this.setState({data: json});
        
        })
       
@@ -65,29 +74,85 @@ loadHistory = async () => {
   
 };
 
+Save = async () => {
+
+}
+
+
 render() {
   return (
     <View style={styles.container}>
 
-      <Text style={styles.title}>History</Text>
+      <Text style={styles.title}>Edit , View & Save</Text>
 
-      <FlatList
-          data={this.state.data}
-          keyExtractor={(item) => item.recipt_id}
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity
-              style={styles.button}
-              onPress={() => this.props.navigation.navigate("MoreHistory")}>
-                <Text  style={styles.text} >{item.title} </Text>
-                <Text  style={styles.text}> {item.dateofupload} </Text>
-                <Text  style={styles.text}>{item.total} </Text>
-              </TouchableOpacity>
-            )
- 
-          }}
-          
-        />
+<Text>{"Title: "}</Text>
+  <TextInput
+    onChangeText={(title) => this.setState({ title })}
+    value={this.state.title}
+    style={styles.input}
+  />
+
+ <Text>{"Date Of Purchase: "}</Text>
+  <TextInput
+    onChangeText={(date) => this.setState({ date })}
+    value={this.state.date}
+    style={styles.input}
+  />
+
+  <Text>{"Currency Type: "}</Text>
+  <TextInput
+    onChangeText={(currency) => this.setState({ currency })}
+    value={this.state.currency}
+    style={styles.input}
+  />
+
+  <Text>{"Total: "}</Text>
+  <TextInput
+    onChangeText={(total) => this.setState({ total })}
+    value={this.state.total}
+    style={styles.input}
+  />
+
+  <Text>{"Change: "}</Text>
+  <TextInput
+    onChangeText={(change) => this.setState({ change })}
+    value={this.state.change}
+    style={styles.input}
+  />
+
+<Text>{"Items Purchased: "}</Text>
+
+<FlatList
+    data={this.state.items}
+    keyExtractor={(item) => item.pirce}
+    renderItem={({ item }) => {
+      return (
+        <TextInput 
+        style={styles.input}
+        onChangeText={(item) => this.setState({ item })}
+        value={this.state.items}>
+          {item.item}
+          {item.price}
+        </TextInput>
+      )
+
+    }}
+    
+  />
+
+
+<Button
+  title="Confirm"
+  color="#00fa00"
+  onPress={this.Save}
+/>
+
+<Button
+  title="Cancel"
+  color="#ff0000"
+  onPress={() =>  this.props.navigation.navigate('History')}
+/>
+
       
     </View>
   );
@@ -128,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default History
+export default MoreHistory
