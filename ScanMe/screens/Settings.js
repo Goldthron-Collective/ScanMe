@@ -21,6 +21,10 @@ class SignUP extends Component {
 
   });
   }
+  //change password
+  //change email
+  //delete all data (drop all recipt data)
+  //delete account
 async componentWillUnmount() {
   this.unsubscribe();
 }
@@ -51,7 +55,7 @@ async componentWillUnmount() {
         <View style={Style.welcome}>
            
           <TouchableOpacity
-            onPress={this.logout()}
+            onPress={() => this.logout()}
             style={Style.buttonStyleDefault}
           >
             <Text style={Style.buttonText}>Logout</Text>

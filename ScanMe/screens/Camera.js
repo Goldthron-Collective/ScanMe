@@ -2,6 +2,9 @@ import { StyleSheet, Text, View, SafeAreaView, Button, Image , TouchableOpacity 
 import { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { Buffer } from "buffer";
+import {SERVER_IP} from "../serverConnect"
+
 import { Camera } from 'expo-camera';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -16,14 +19,19 @@ import { config } from '../config.js'
 const appHelper = require('../polyGroup');
 const API_KEY = config.API_KEY; 
 const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
+let URI = "";
+let TYPE = "";
+let photos = "";
 
 export default function App({navigation}) {
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
   const [photo, setPhoto] = useState();
+  
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
   const [flashMode, setFlashMode] = useState('off');
+  
 
   useEffect(() => {
     (async () => {
@@ -81,18 +89,13 @@ export default function App({navigation}) {
       });
       const result = await response.json();
 
-      console.log("hello?");
+   
 
       const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
   
       const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
-      
-      navigation.navigate("Save",{arrData: lower,imageData: image});
 
-  
-     
-      
-  
+      navigation.navigate("Save",{arrData: lower,imageData: photos});
   
       return lower
         ? lower
@@ -105,13 +108,14 @@ export default function App({navigation}) {
         //this will allow the Vision API to read this image.
       });
       if (!result.cancelled) {
-          //const responseData = await onSubmit(result.base64);
-          
+    
+          photos = result.base64;
+
           console.log("sending to next screen.....");
-      
+          
           callGoogleVisionAsync(result.base64);
         }
-        console.log(result.base64);
+     
     };
   const switchCamera = () => {
     if (cameraType === 'back') {
@@ -135,8 +139,12 @@ export default function App({navigation}) {
   if (photo) {
 
     let savePhoto = () => {
+
+      photos = photo.base64;
+      
       MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
         
+       
         callGoogleVisionAsync(photo.base64);
         setPhoto(undefined);
         

@@ -3,7 +3,7 @@ import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList ,Button 
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
-
+//ability to zoom into images
 
 class MoreHistory extends Component {
   constructor(props) {
@@ -12,12 +12,16 @@ class MoreHistory extends Component {
     this.state = {
       id : "",
       errorTxt: "",
-      items: "",
+      items: [],
       date: "",
+      dateUpload:"",
       title: "",
       currency: "",
       total: "",
       change: "",
+      uri: null,
+      loading: true,
+      
 
 
     };
@@ -45,14 +49,24 @@ loadHistory = async () => {
   }
 
   
-  fetch(SERVER_IP+"getByRecId?id="+id+"&recid="+this.state.recID)
+  return fetch(SERVER_IP+"getByRecId?id="+id+"&recid="+await this.props.route.params.rec_id)
   .then(async(response) => {
   
     if (response.status == 200) {
        response.json().then(async(json) => {
-        console.log(json);
-        console.log(json.title);
-        //this.setState({data: json});
+
+        const imageData = `data:image/jpg;base64,${json[0].images}`;
+
+       
+        this.setState({title: json[0].title});
+        this.setState({currency: json[0].currency});
+        this.setState({date: json[0].dateatime});
+        this.setState({dateUpload: json[0].dateofupload});
+        this.setState({total: json[0].total.toString()});
+        this.setState({change: json[0].changes.toString()});
+        this.setState({items: JSON.parse(json[0].items)});
+        this.setState({uri:imageData}, () => this.setState({loading: false}));
+        
        
        })
       
@@ -78,12 +92,30 @@ Save = async () => {
 
 }
 
+Delete = async() =>
+{
+
+}
+
 
 render() {
+  if (this.state.loading == true) {
+    return (
+      <View style={styles.container}>
+
+          <Text style={{fontSize: 30,fontWeight: 'bold'}}>Loading...</Text>
+
+
+        </View>
+    )
+  }
   return (
+   
     <View style={styles.container}>
 
       <Text style={styles.title}>Edit , View & Save</Text>
+
+      <Image source={{ uri: this.state.uri }} style={{ width: 200, height: 200 }} />
 
 <Text>{"Title: "}</Text>
   <TextInput
@@ -96,6 +128,13 @@ render() {
   <TextInput
     onChangeText={(date) => this.setState({ date })}
     value={this.state.date}
+    style={styles.input}
+  />
+
+<Text>{"Date Of Upload: "}</Text>
+  <TextInput
+    onChangeText={(dateUpload) => this.setState({ dateUpload })}
+    value={this.state.dateUpload}
     style={styles.input}
   />
 
@@ -142,13 +181,19 @@ render() {
 
 
 <Button
-  title="Confirm"
+  title="Save"
   color="#00fa00"
   onPress={this.Save}
 />
 
 <Button
-  title="Cancel"
+  title="Delete"
+  color="#ff0000"
+  onPress={this.Delete}
+/>
+
+<Button
+  title="Go Back"
   color="#ff0000"
   onPress={() =>  this.props.navigation.navigate('History')}
 />
@@ -163,15 +208,17 @@ render() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 30,
+    paddingHorizontal: 40,
+    marginVertical: 0,
     paddingTop: 80,
     alignItems: 'center',
     justifyContent: 'center',
+
+
   },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-   
   },
   button:
   {

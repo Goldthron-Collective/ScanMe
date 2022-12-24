@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import Style from "./Style";
 import logo from "./logo.png";
 import {SERVER_IP} from "../serverConnect"
@@ -30,11 +31,11 @@ class Login extends Component {
     
     fetch(SERVER_IP+"login?email="+email+"&password="+pass)
       .then(async(response) => {
-        console.log(response);
+      
   
         if (response.status == 200) {
            response.json().then(async(json) => {
-            console.log(json[0].id);
+           
             await AsyncStorage.setItem("@id", String(json[0].id));
             
             this.props.navigation.navigate("Homes");

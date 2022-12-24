@@ -1,6 +1,7 @@
-import React, { Component,useEffect,useState  } from "react";
-import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList ,Button } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import React, { Component , Fragment} from "react";
+import { View,Text,StyleSheet,TextInput,FlatList ,Button } from "react-native";
+
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SERVER_IP} from "../serverConnect"
 
@@ -10,15 +11,14 @@ class Save extends Component {
     super(props);
       this.state = {
         data: this.props.route.params.arrData,
-        date: '',
-        currency: '',
-        change: '',
-        total: '',
+        date: "Not Found",
+        currency: "Not Found",
+        change: "Not Found",
+        total: "Not Found",
         items: [],
         itemPrice: [],
         map: [],
         title: "Untitled Recipt",
-        image: this.props.route.params.imageData,
       };
     }
 
@@ -31,6 +31,7 @@ async componentDidMount() {
       this.getChange();
       this.getTotal();
       this.getItems();
+      
 
   });
   }
@@ -46,29 +47,35 @@ async componentWillUnmount() {
     for(let i = 0; i < this.state.data.length; i++)
     {
       date = this.state.data[i].match(date1);
-      //console.log(date);
       if(date != null)
       {
         date = this.state.data[i];
-        //data.splice(i,1);
         break;
       }
+
       date = this.state.data[i].match(date2);
-      //console.log(date);
       if(date != null)
       {
         date = this.state.data[i];
-        //data.splice(i,1);
+        
         break;
       }      
     }
-    console.log("DATE == " + date);
-
-
-    this.setState({date: date}, () => {
-      console.log(" IT CHANGED ???");
-      console.log(this.state.date);
-    });
+    if (date != null)
+    {
+      this.setState({date: date}, () => {
+        
+        console.log("date = " +this.state.date);
+      });
+    }
+    else
+    {
+      this.setState({date: new Date()}, () => {
+       
+        console.log("date not found = " + this.state.date);
+      });
+    }
+  
 
 
   }
@@ -83,13 +90,15 @@ async componentWillUnmount() {
      
       if(currency != null)
       {
-        //data.splice(i,1);
+        this.setState({currency: currency[0]});
         break;
       }
     }
-    console.log("CURRENCY == " + currency[0]);
-    this.setState({currency: currency[0]});
 
+    if (currency == null)
+    {
+      this.setState({currency: "£"});
+    }
   }
   getChange = async () => 
   {
@@ -104,14 +113,36 @@ async componentWillUnmount() {
       {
         changeMatch  = this.state.data[i];
         this.state.data.length = i;
+        changeMatch = String(changeMatch);  
+        var doublenumber = changeMatch.match(/([+-]?\d+(\.\d+)?)/g);
+        //console.log("CHANGE == " + doublenumber);
+        if(doublenumber != null)
+        {
+          this.setState({change: String(doublenumber)});
+        }
+        else
+        {
+          this.setState({change: changeMatch});
+        }
+        
         break;
       }
     }
 
-    changeMatch = String(changeMatch);  
-    var doublenumber = changeMatch.match(/([+-]?\d+(\.\d+)?)/g);
-    console.log("CHANGE == " + doublenumber);
-    this.setState({change: String(doublenumber)});
+    if(changeMatch == null)
+    {
+      this.setState({change: "0"});
+      Alert.alert(
+        "Change Not Found",
+        "Please Enter The Change",
+        [
+           { text: "OK", onPress: () => console.log("OK Pressed") }
+        ]
+      );
+      
+    }
+
+    
     
   }
   getTotal = async () => 
@@ -126,21 +157,22 @@ async componentWillUnmount() {
       {
         totalMatch  = this.state.data[i];
         this.state.data.length = i;
-
+        totalMatch = String(totalMatch);  
+        var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
+        //console.log("TOTAL == " + doublenumber);
+        this.setState({total: String(doublenumber)});
         break;
       }
     }
-    
-    totalMatch = String(totalMatch);  
-    var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
-    console.log("TOTAL == " + doublenumber);
-    this.setState({total: String(doublenumber)});
+    if(totalMatch == null)
+    {
+      this.setState({total: "0"});
+    }
+   
     
   }
   getItems = async () => 
   {
-    
-
     const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
     var currency = null;
     var float = null;
@@ -155,38 +187,34 @@ async componentWillUnmount() {
       currency = this.state.data[i].match(currencyRegex);
       float = this.state.data[i].match(/([+-]?[0-9]+[.][0-9]*([e][+-]?[0-9]+)?)/g);
 
-     
-      
-
       if(currency != null || float != null)
       {
-        
-        console.log(float);
         curItem = String(this.state.data[i].replace(float,''));
+        curItem = curItem.replace(currencyRegex,"");
+        //remove currency if avaliable
+        // makebuttons next to each other
         map[j] = {item: curItem ,price: float[0]};
         j++;
-
-        
-       
       }
     }
   
-    this.setState({map: map});
-   
-    //all data sent to front end in the form of editable form and then once all good sent to database
-      
-
+    if(map.length != 0)
+    {
+      this.setState({map: map});
+    }
+    else
+    {
+      map[0] = {item: "Not Found" ,price: "No Price"};
+      this.setState({map: map});
+    }
   }
   validateSave = async () => 
   {
 
-    //this.state.title
-    //this.state.date
-    //this.state.currency
-   // this.state.total
-   // this.state.change
-    //this.state.map
+    // CHECK ALL DATA BEFORE SENDING 
 
+    //Date format , missing fields , incorrect total (add each item price to check if total is correct)
+    
     this.sendToDB()
   }
 
@@ -194,22 +222,18 @@ async componentWillUnmount() {
   {
 
     const id = await AsyncStorage.getItem("@id");
-    
-    console.log(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title+"&images="+this.state.image);
+    const photo = await this.props.route.params.imageData;
 
-    let res = await fetch(this.state.image);
-    let blob = await res.blob();
+    console.log(photo);
 
     return fetch(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title, {
       method: "POST",
-      headers: { "Content-Type": "image/png"},
-      body: blob,
+      headers: { "Content-Type": "application/json"},
+      body: JSON.stringify({image: photo})
     })
       .then((response) => {
-        console.log(response);
-
         if (response.status == 200) {
-        this.props.navigation.navigate("History");
+          this.props.navigation.navigate("History");
       
         } else if (response.status == 403) {
           return this.setState({ errorTxt: "Email doesnt Exist" });
@@ -224,97 +248,100 @@ async componentWillUnmount() {
       .catch((err) => {
         console.log(err);
       });
-    
-  
-  /*
 
-    fetch(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title+"&images="+this.state.image)
-    .then(async(response) => {
-      console.log(response);
-
-      if (response.status == 200) {
-      this.props.navigation.navigate("History");
-        
-        
-
-       
-      } else if (response.status == 403) {
-        return this.setState({ errorTxt: "Email doesnt Exist" });
-        //used display the resposnes from the server
-      } else if (response.status == 403) {
-        return this.setState({ errorTxt: "Invalid Password" });
-        //each error code returns a diffrent response to the user
-      } else {
-        return this.setState({ errorTxt: "Something went wrong" });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-    */
+    //?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title
   }
 
 render(){
     return (
       
-      <ScrollView style={{paddingHorizontal: 30,paddingTop: 50}}>
+      <View style={{paddingHorizontal: 30,paddingTop: 50 , flex:1}}>
 
       <Text style={styles.title}>Edit & Save</Text>
 
       <Text>{"Title: "}</Text>
         <TextInput
           onChangeText={(title) => this.setState({ title })}
-          value={this.state.title}
+          value={this.state.title.toString()}
           style={styles.input}
         />
       
        <Text>{"Date Of Purchase: "}</Text>
         <TextInput
           onChangeText={(date) => this.setState({ date })}
-          value={this.state.date}
+          value={this.state.date.toString()}
           style={styles.input}
         />
 
         <Text>{"Currency Type: "}</Text>
         <TextInput
           onChangeText={(currency) => this.setState({ currency })}
-          value={this.state.currency}
+          value={this.state.currency.toString()}
           style={styles.input}
         />
 
         <Text>{"Total: "}</Text>
         <TextInput
           onChangeText={(total) => this.setState({ total })}
-          value={this.state.total}
+          value={this.state.total.toString()}
           style={styles.input}
         />
 
         <Text>{"Change: "}</Text>
         <TextInput
           onChangeText={(change) => this.setState({ change })}
-          value={this.state.change}
+          value={this.state.change.toString()}
           style={styles.input}
         />
-
-      <Text>{"Items Purchased: "}</Text>
+  
+      <View style={{flexDirection:"row"}}>
+      <View style={{flex:1}}>
+      <Text>{"Item Name"}</Text>
+      </View>
+      <View style={{flex:1}}>
+      <Text>{"Price"}</Text>
+      </View>
+      
+      </View>
 
       <FlatList
+      style={{flex: 1}}
           data={this.state.map}
           keyExtractor={(item) => item.pirce}
           renderItem={({ item }) => {
             return (
-              <TextInput 
-              style={styles.input}
-              onChangeText={(item) => this.setState({ item })}
-              value={this.state.map}>
-                {item.item}
-                {item.price}
-              </TextInput>
+              <Fragment>
+                <View style={{flexDirection:"row"}}>
+                  <View style={{flex:1}}>
+                    <TextInput 
+                    style={styles.input}
+                    onChangeText={(item) => this.setState({ item })}
+                    value={this.state.map}>
+                      {item.item}
+                    </TextInput>
+                  </View>
+                  <View style={{flex:1}}>
+                    <TextInput 
+                    style={styles.input}
+                    onChangeText={(item) => this.setState({ item })}
+                    value={this.state.map}>
+                      {item.price}
+                    </TextInput>
+                  </View>
+                </View>
+                </Fragment>
+            
+               
             )
  
           }}
           
         />
+          <Button
+        title="Add Item"
+        color="#00fa00"
+        onPress={()=> this.setState({map: [...this.state.map, {item: "" ,price: ""}] })}
+      />
       
 
       <Button
@@ -331,7 +358,7 @@ render(){
 
 
 
-      </ScrollView>
+      </View>
     )
   
 }

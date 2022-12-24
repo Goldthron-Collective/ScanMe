@@ -90,8 +90,8 @@ class index extends Component {
         }
       }}/>
 
-      <Tab.Screen name="Save" component={Save} options={{headerShown: false}} />
-      <Tab.Screen name="MoreHistory" component={ViewHistory} options={{headerShown: false}} />
+      <Tab.Screen name="Save" component={Save} options={{headerShown: false ,  tabBarShowLabel: false,}} />
+      <Tab.Screen name="MoreHistory" component={ViewHistory} options={{headerShown: false,  tabBarShowLabel: false,}} />
     </Tab.Navigator>
     
     );
