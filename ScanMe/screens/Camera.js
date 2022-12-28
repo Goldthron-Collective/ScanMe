@@ -19,9 +19,11 @@ import { config } from '../config.js'
 const appHelper = require('../polyGroup');
 const API_KEY = config.API_KEY; 
 const API_URL = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
-let URI = "";
-let TYPE = "";
 let photos = "";
+
+//compress photo to under 1mb
+//dected location of recript and only scan that part and ignore backgroun (same with photos)
+
 
 export default function App({navigation}) {
   let cameraRef = useRef();
