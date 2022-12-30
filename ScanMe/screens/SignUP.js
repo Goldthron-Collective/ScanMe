@@ -44,7 +44,12 @@ class SignUP extends Component {
 
   fetch(SERVER_IP+"signup?email="+this.state.email+"&password="+this.state.password+"&first_name="+ this.state.first_name+"&last_name=+"+this.state.last_name) 
   .then((response)=>{
-    console.log(response);
+    
+    if (response.status == 200) {
+     
+       this.props.navigation.navigate("Login");
+    }
+     
      
    // () =>  this.props.navigation.navigate('');
   })

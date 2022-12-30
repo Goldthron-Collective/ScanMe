@@ -14,10 +14,13 @@ class SignUP extends Component {
       errorTxt: "",
       data: "",
       modalVisible: false,
+      modalVisible2: false,
+      modalVisible3: false,
       pass:"",
       passConf:"",
       curPass:"",
       errorPass:"",
+      
    
     };
   }
@@ -61,10 +64,36 @@ async componentWillUnmount() {
   deleteReciptData = async() =>
   {
 
+    
+    return fetch(SERVER_IP+"deleteAllRecipts?id="+this.state.id).then(async(response) => {
+      if(response.status == 200)
+      {
+        return this.setState({errorTxt: "Sucessfully Deleted All Recipt Data"});
+      }
+      else 
+      {
+        return this.setState({errorTxt: "Erorr / No Data Found"});
+      }
+    })
+
   }
   deleteAccount = async() =>
   {
+    fetch(SERVER_IP+"deleteAllRecipts?id="+this.state.id).then(async() => {
+      return fetch(SERVER_IP+"deleteAccount?id="+this.state.id).then(async(response) =>{
+        if(response.status == 200)
+        {
+        
+          return this.logout();
 
+        }
+        else
+        {
+          return this.setState({errorTxt: "Unable To Delete Account"});
+        }
+      })
+
+    })
   }
 
   confirm = async() =>{
@@ -109,6 +138,8 @@ async componentWillUnmount() {
      
        
         <View style={styles.container}>
+
+        <Text>{this.state.errorTxt}</Text>
            
            <TouchableOpacity
             onPress={() => this.logout()}
@@ -174,6 +205,71 @@ async componentWillUnmount() {
         </View>
       </Modal>
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={this.state.modalVisible2}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          this.setState({modalVisible2: !this.state.modalVisible2});
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Are You Sure You Want to Permantly Delete All Your Recipt Data?</Text>
+
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {this.deleteReciptData(); this.setState({modalVisible2: !this.state.modalVisible2})}}
+            >
+              <Text style={styles.textStyle}>Yes</Text>
+            </Pressable>
+
+
+             <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {this.setState({modalVisible2: !this.state.modalVisible2}); this.setState({errorDelData: ""})}}
+            >
+              <Text style={styles.textStyle}>No</Text>
+            </Pressable>
+         
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={this.state.modalVisible3}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          this.setState({modalVisible3: !this.state.modalVisible3});
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>WARNING YOU WILL PERMANTLY DELETE YOUR ACCOUNT AND ALL DATA AND CANNOT BE UNDONE!</Text>
+
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {this.deleteAccount(); this.setState({modalVisible3: !this.state.modalVisible3})}}
+            >
+              <Text style={styles.textStyle}>Yes</Text>
+            </Pressable>
+
+
+             <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {this.setState({modalVisible3: !this.state.modalVisible3}); this.setState({errorDelData: ""})}}
+            >
+              <Text style={styles.textStyle}>No</Text>
+            </Pressable>
+         
+          </View>
+        </View>
+      </Modal>
+
+
       <Pressable
         style={[styles.button, styles.buttonOpen]}
         onPress={() => this.setState({modalVisible: true})}
@@ -181,19 +277,19 @@ async componentWillUnmount() {
         <Text style={styles.textStyle}>Change Password </Text>
       </Pressable>
 
-          <TouchableOpacity
-            onPress={() => this.deleteReciptData()}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Delete Recipt Data</Text>
-          </TouchableOpacity>
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => this.setState({modalVisible2: true})}
+      >
+        <Text style={styles.textStyle}>Delete Recipt Data </Text>
+      </Pressable>
 
-          <TouchableOpacity
-            onPress={() => this.deleteAccount()}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Delete Account</Text>
-          </TouchableOpacity>
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => this.setState({modalVisible3: true})}
+      >
+        <Text style={styles.textStyle}>Delete Account</Text>
+      </Pressable>
 
         </View>
      
