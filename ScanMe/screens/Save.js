@@ -1,10 +1,20 @@
 import React, { Component , Fragment} from "react";
-import { View,Text,StyleSheet,TextInput,FlatList ,Button } from "react-native";
-
+import { View,Text,StyleSheet,FlatList ,Button } from "react-native";
+import Style from "./Style";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SERVER_IP} from "../serverConnect"
+import { TextInput ,MD3LightTheme as DefaultTheme} from 'react-native-paper';
 
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#04bbd4',
+
+  },
+};
 
 class Save extends Component {
   constructor(props) {
@@ -115,7 +125,7 @@ async componentWillUnmount() {
         this.state.data.length = i;
         changeMatch = String(changeMatch);  
         var doublenumber = changeMatch.match(/([+-]?\d+(\.\d+)?)/g);
-        //console.log("CHANGE == " + doublenumber);
+        console.log("CHANGE == " + doublenumber);
         if(doublenumber != null)
         {
           this.setState({change: String(doublenumber)});
@@ -159,7 +169,7 @@ async componentWillUnmount() {
         this.state.data.length = i;
         totalMatch = String(totalMatch);  
         var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
-        //console.log("TOTAL == " + doublenumber);
+        console.log("TOTAL == " + doublenumber);
         this.setState({total: String(doublenumber)});
         break;
       }
@@ -224,8 +234,6 @@ async componentWillUnmount() {
     const id = await AsyncStorage.getItem("@id");
     const photo = await this.props.route.params.imageData;
 
-    console.log(photo);
-
     return fetch(SERVER_IP+"addReceipt?id="+id+"&date="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.map)+"&title="+this.state.title, {
       method: "POST",
       headers: { "Content-Type": "application/json"},
@@ -259,50 +267,49 @@ render(){
 
       <Text style={styles.title}>Edit & Save</Text>
 
-      <Text>{"Title: "}</Text>
         <TextInput
+          label="Title"
           onChangeText={(title) => this.setState({ title })}
           value={this.state.title.toString()}
-          style={styles.input}
+          style={Style.inputBox}
+          theme={theme}
         />
       
-       <Text>{"Date Of Purchase: "}</Text>
+       
         <TextInput
           onChangeText={(date) => this.setState({ date })}
           value={this.state.date.toString()}
-          style={styles.input}
+          style={Style.inputBox}
+          theme={theme}
+          label="Date Of Purchase"
         />
 
-        <Text>{"Currency Type: "}</Text>
+        
         <TextInput
           onChangeText={(currency) => this.setState({ currency })}
           value={this.state.currency.toString()}
-          style={styles.input}
+          style={Style.inputBox}
+          theme={theme}
+          label="Currency Type"
         />
 
-        <Text>{"Total: "}</Text>
+        
         <TextInput
           onChangeText={(total) => this.setState({ total })}
           value={this.state.total.toString()}
-          style={styles.input}
+          style={Style.inputBox}
+          theme={theme}
+          label="Total"
         />
 
-        <Text>{"Change: "}</Text>
+       
         <TextInput
           onChangeText={(change) => this.setState({ change })}
           value={this.state.change.toString()}
-          style={styles.input}
+          style={Style.inputBox}
+          theme={theme}
+          label="Change"
         />
-  
-      <View style={{flexDirection:"row"}}>
-      <View style={{flex:1}}>
-      <Text>{"Item Name"}</Text>
-      </View>
-      <View style={{flex:1}}>
-      <Text>{"Price"}</Text>
-      </View>
-      
-      </View>
 
       <FlatList
       style={{flex: 1}}
@@ -314,7 +321,9 @@ render(){
                 <View style={{flexDirection:"row"}}>
                   <View style={{flex:1}}>
                     <TextInput 
-                    style={styles.input}
+                    style={Style.inputBox}
+                    theme={theme}
+                    label="Item Name"
                     onChangeText={(item) => this.setState({ item })}
                     value={this.state.map}>
                       {item.item}
@@ -322,7 +331,9 @@ render(){
                   </View>
                   <View style={{flex:1}}>
                     <TextInput 
-                    style={styles.input}
+                    style={Style.inputBox}
+                    theme={theme}
+                    label="Price"
                     onChangeText={(item) => this.setState({ item })}
                     value={this.state.map}>
                       {item.price}
@@ -330,13 +341,10 @@ render(){
                   </View>
                 </View>
                 </Fragment>
-            
-               
             )
- 
           }}
-          
         />
+
           <Button
         title="Add Item"
         color="#00fa00"
@@ -378,14 +386,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     top: 0,
   },
-  input:{
-    height: 40,
-    borderWidth: 1,
-    color: "black",
-    width: "95%",
-    padding: 10,
-    margin: 10,
-  }
 });
 
 

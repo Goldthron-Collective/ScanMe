@@ -1,8 +1,20 @@
-import React, { Component } from "react";
-import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image,FlatList ,Button } from "react-native";
-
+import React, { Component, Fragment } from "react";
+import { View,Text,StyleSheet,TouchableOpacity,Image,FlatList ,Button } from "react-native";
+import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
+import { TextInput ,MD3LightTheme as DefaultTheme} from 'react-native-paper';
+
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#04bbd4',
+
+  },
+};
+
 //ability to zoom into images
 
 class MoreHistory extends Component {
@@ -64,10 +76,10 @@ loadHistory = async () => {
         this.setState({dateUpload: json[0].dateofupload});
         this.setState({total: json[0].total.toString()});
         this.setState({change: json[0].changes.toString()});
-        this.setState({items: JSON.parse(json[0].items)});
+        this.setState({items: json[0].items});
         this.setState({uri:imageData}, () => this.setState({loading: false}));
         
-       
+       console.log(json[0].items);
        })
       
 
@@ -117,67 +129,91 @@ render() {
 
       <Image source={{ uri: this.state.uri }} style={{ width: 200, height: 200 }} />
 
-<Text>{"Title: "}</Text>
+
   <TextInput
     onChangeText={(title) => this.setState({ title })}
     value={this.state.title}
-    style={styles.input}
+     style={Style.inputBox}
+     theme={theme}
+     label="Title"
   />
 
- <Text>{"Date Of Purchase: "}</Text>
+
   <TextInput
     onChangeText={(date) => this.setState({ date })}
     value={this.state.date}
-    style={styles.input}
+     style={Style.inputBox}
+     theme={theme}
+     label="Date Of Purchase"
   />
 
-<Text>{"Date Of Upload: "}</Text>
   <TextInput
     onChangeText={(dateUpload) => this.setState({ dateUpload })}
     value={this.state.dateUpload}
-    style={styles.input}
+    style={Style.inputBox}
+    theme={theme}
+    label="Date Of Upload"
+
+
   />
 
-  <Text>{"Currency Type: "}</Text>
   <TextInput
     onChangeText={(currency) => this.setState({ currency })}
     value={this.state.currency}
-    style={styles.input}
+    style={Style.inputBox}
+    theme={theme}
+    label="Currency Type"
   />
 
-  <Text>{"Total: "}</Text>
   <TextInput
     onChangeText={(total) => this.setState({ total })}
     value={this.state.total}
-    style={styles.input}
+    style={Style.inputBox}
+    theme={theme}
+    label="Total"
   />
 
-  <Text>{"Change: "}</Text>
   <TextInput
     onChangeText={(change) => this.setState({ change })}
     value={this.state.change}
-    style={styles.input}
+    style={Style.inputBox}
+    theme={theme}
+    label="Change"
   />
-
-<Text>{"Items Purchased: "}</Text>
 
 <FlatList
-    data={this.state.items}
-    keyExtractor={(item) => item.pirce}
-    renderItem={({ item }) => {
-      return (
-        <TextInput 
-        style={styles.input}
-        onChangeText={(item) => this.setState({ item })}
-        value={this.state.items}>
-          {item.item}
-          {item.price}
-        </TextInput>
-      )
-
-    }}
-    
-  />
+      style={{flex: 1}}
+          data={this.state.items}
+          keyExtractor={(item) => item.pirce}
+          renderItem={({ item }) => {
+            return (
+              <Fragment>
+                <View style={{flexDirection:"row"}}>
+                  <View style={{flex:1}}>
+                    <TextInput 
+                    style={Style.inputBox}
+                    theme={theme}
+                    label="Item Name"
+                    onChangeText={(item) => this.setState({ item })}
+                    value={this.state.items}>
+                      {item.item}
+                    </TextInput>
+                  </View>
+                  <View style={{flex:1}}>
+                    <TextInput 
+                    style={Style.inputBox}
+                    theme={theme}
+                    label="Price"
+                    onChangeText={(item) => this.setState({ item })}
+                    value={this.state.items}>
+                      {item.price}
+                    </TextInput>
+                  </View>
+                </View>
+                </Fragment>
+            )
+          }}
+        />
 
 
 <Button
@@ -208,12 +244,8 @@ render() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 40,
-    marginVertical: 0,
-    paddingTop: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-
+    paddingHorizontal: 30,
+    paddingTop: 50,
 
   },
   title: {

@@ -1,10 +1,20 @@
 import React, { Component } from "react";
-import { View, Text, ScrollView, TextInput, Image } from "react-native";
+import { View, Text, ScrollView, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Style from "./Style";
 import logo from "./logo.png";
 import { SERVER_IP } from "../serverConnect"
+import { TextInput ,MD3LightTheme as DefaultTheme} from 'react-native-paper';
 
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#04bbd4',
+
+  },
+};
 class SignUP extends Component {
   constructor(props) {
     super(props);
@@ -42,16 +52,12 @@ class SignUP extends Component {
 
 
 
-  fetch(SERVER_IP+"signup?email="+this.state.email+"&password="+this.state.password+"&first_name="+ this.state.first_name+"&last_name=+"+this.state.last_name) 
+ return fetch(SERVER_IP+"signup?email="+this.state.email+"&password="+this.state.password+"&first_name="+ this.state.first_name+"&last_name=+"+this.state.last_name) 
   .then((response)=>{
     
     if (response.status == 200) {
-     
        this.props.navigation.navigate("Login");
     }
-     
-     
-   // () =>  this.props.navigation.navigate('');
   })
   .catch((error)=>{
       alert("Error Occured" + error);
@@ -68,29 +74,33 @@ class SignUP extends Component {
         <View style={Style.welcome}>
            
           <TextInput
-            placeholder="Enter your first name..."
+            label="First Name..."
             onChangeText={(first_name) => this.setState({ first_name })}
             value={this.state.first_name}
             style={Style.inputBox}
+            theme={theme}
           />
           <TextInput
-            placeholder="Enter your last name..."
+            label="Last Name..."
             onChangeText={(last_name) => this.setState({ last_name })}
             value={this.state.last_name}
             style={Style.inputBox}
+            theme={theme}
           />
           <TextInput
-            placeholder="Enter your email..."
+            label="Email..."
             onChangeText={(email) => this.setState({ email })}
             value={this.state.email}
             style={Style.inputBox}
+            theme={theme}
           />
           <TextInput
-            placeholder="Enter your password..."
+            label="Password..."
             onChangeText={(password) => this.setState({ password })}
             value={this.state.password}
             secureTextEntry
             style={Style.inputBox}
+            theme={theme}
           />
           <Text style={Style.errorText}>{this.state.errorTxt}</Text>
           <TouchableOpacity

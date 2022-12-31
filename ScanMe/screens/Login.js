@@ -1,12 +1,22 @@
 import React, { Component } from "react";
-import { View,Text,StyleSheet,TextInput,TouchableOpacity,Image } from "react-native";
+import { View,Text,StyleSheet,TouchableOpacity,Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TextInput , MD3LightTheme as DefaultTheme } from 'react-native-paper';
 
 import Style from "./Style";
 import logo from "./logo.png";
 import {SERVER_IP} from "../serverConnect"
 
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#04bbd4',
+
+  },
+};
 
 class Login extends Component {
   constructor(props) {
@@ -16,8 +26,12 @@ class Login extends Component {
       email: "",
       password: "",
       errorTxt: "",
+      backgroundColor: 'transparent',
+      color: 'red'
+
     };
   }
+  
   login = async () => {
 
     let email = this.state.email.toLowerCase();
@@ -58,6 +72,9 @@ class Login extends Component {
       });
       
   };
+
+
+ 
   
 
   render() {
@@ -65,18 +82,22 @@ class Login extends Component {
      
         <View style={Style.welcome}>
           <TextInput
+          
             style={Style.inputBox}
             onChangeText={(value) => this.setState({ email: value })}
             value={this.state.email}
-            placeholder="Email"
+            label="Email"r
+            theme={theme}
           />
 
           <TextInput
+          
             style={Style.inputBox}
             secureTextEntry={true}
             onChangeText={(value) => this.setState({ password: value })}
             value={this.state.password}
-            placeholder="Password"
+            label="Password"
+            theme={theme}
           />
 
           <Text style={Style.errorText}>{this.state.errorTxt}</Text>
@@ -87,14 +108,14 @@ class Login extends Component {
               this.login();
             }}
           >
-            <Text style={Style.buttonText}>Login</Text>
+            <Text style={Style.buttonText}>LOGIN</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={Style.buttonStyleDefault}
             onPress={() => this.props.navigation.navigate("SignUP")}
           >
-            <Text style={Style.buttonText}>Sign Up</Text>
+            <Text style={Style.buttonText}>CREATE ACCOUNT</Text>
           </TouchableOpacity>
         </View>
     

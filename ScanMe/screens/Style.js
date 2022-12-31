@@ -1,5 +1,6 @@
 import { WhiteBalance } from 'expo-camera/build/Camera.types'
 import { StyleSheet } from 'react-native'
+import { color } from 'react-native-reanimated'
 //import { color } from 'react-native-reanimated'
 
 export default StyleSheet.create({
@@ -16,7 +17,8 @@ export default StyleSheet.create({
   welcome:
   {
     justifyContent: 'center',
-    flex: 1
+    flex: 1,
+    marginHorizontal: 30,
 
   },
   centerText: {
@@ -28,31 +30,31 @@ export default StyleSheet.create({
   homeButton: {
     borderRadius: 30,
     padding: 10,
-    backgroundColor: 'dodgerblue'
+    backgroundColor: '#04bbd4'
   },
   buttonStyleDefault:
   {
 
-    borderRadius: 30,
-    padding: 25,
+    borderRadius: 10,
+    padding: 20,
     marginHorizontal: 15,
     marginVertical: 10,
-    backgroundColor: 'dodgerblue'
+    backgroundColor: '#04bbd4'
 
   },
   inputBox: {
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 10,
+    padding: 2,
+    borderRadius: 5,
     margin: 5,
-    fontWeight: '500'
+    fontWeight: '500',
+    backgroundColor: 'transparent'
   },
 
-  buttonText:
+buttonText:
 {
   textAlign: 'center',
   color: 'white',
-  fontWeight: '400'
+  fontWeight: '700'
 
 },
   titleText: {
