@@ -49,9 +49,9 @@ class Login extends Component {
   
         if (response.status == 200) {
            response.json().then(async(json) => {
-           
+
+            this.setState({ errorTxt: "" });
             await AsyncStorage.setItem("@id", String(json[0].id));
-            
             this.props.navigation.navigate("Homes");
            })
           
@@ -63,7 +63,13 @@ class Login extends Component {
         } else if (response.status == 403) {
           return this.setState({ errorTxt: "Invalid Password" });
           //each error code returns a diffrent response to the user
-        } else {
+        } else if (response.status == 402)
+        {
+          return this.setState({ errorTxt: "Verification Link Has Been Sent To Your Email" });
+        }
+        else
+        {
+          console.log(response.status);
           return this.setState({ errorTxt: "Something went wrong" });
         }
       })
@@ -81,12 +87,13 @@ class Login extends Component {
     return (
      
         <View style={Style.welcome}>
+          <Text style={Style.errorText}>{this.state.errorTxt}</Text>
           <TextInput
           
             style={Style.inputBox}
             onChangeText={(value) => this.setState({ email: value })}
             value={this.state.email}
-            label="Email"r
+            label="Email"
             theme={theme}
           />
 
@@ -100,7 +107,7 @@ class Login extends Component {
             theme={theme}
           />
 
-          <Text style={Style.errorText}>{this.state.errorTxt}</Text>
+          
 
           <TouchableOpacity
             style={Style.buttonStyleDefault}

@@ -217,6 +217,8 @@ async componentWillUnmount() {
       map[0] = {item: "Not Found" ,price: "No Price"};
       this.setState({map: map});
     }
+
+    console.log(map);
   }
   validateSave = async () => 
   {
@@ -265,7 +267,7 @@ render(){
       
       <View style={{paddingHorizontal: 30,paddingTop: 50 , flex:1}}>
 
-      <Text style={styles.title}>Edit & Save</Text>
+      <Text style={Style.title}>Edit & Save</Text>
 
         <TextInput
           label="Title"
@@ -369,23 +371,8 @@ render(){
       </View>
     )
   
-}
+  }
 }
 export default Save;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  
-
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    top: 0,
-  },
-});
 
 

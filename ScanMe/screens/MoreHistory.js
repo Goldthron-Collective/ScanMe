@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { View,Text,StyleSheet,TouchableOpacity,Image,FlatList ,Button } from "react-native";
+import { View,Text,StyleSheet,ScrollView ,Image,FlatList ,Button } from "react-native";
 import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
@@ -33,9 +33,7 @@ class MoreHistory extends Component {
       change: "",
       uri: null,
       loading: true,
-      
-
-
+      recID: this.props.route.params.rec_id,
     };
   }
   async componentDidMount() {
@@ -61,7 +59,7 @@ loadHistory = async () => {
   }
 
   
-  return fetch(SERVER_IP+"getByRecId?id="+id+"&recid="+await this.props.route.params.rec_id)
+  return fetch(SERVER_IP+"getByRecId?id="+id+"&recid="+await this.state.recID)
   .then(async(response) => {
   
     if (response.status == 200) {
@@ -76,10 +74,10 @@ loadHistory = async () => {
         this.setState({dateUpload: json[0].dateofupload});
         this.setState({total: json[0].total.toString()});
         this.setState({change: json[0].changes.toString()});
-        this.setState({items: json[0].items});
+        this.setState({items: JSON.parse(json[0].items)});
         this.setState({uri:imageData}, () => this.setState({loading: false}));
-        
-       console.log(json[0].items);
+      
+  
        })
       
 
@@ -101,7 +99,19 @@ loadHistory = async () => {
 };
 
 Save = async () => {
-
+ 
+  return fetch(SERVER_IP+"updRec?id="+this.state.id+"&recid="+this.state.recID+"&title="+this.state.title+"&dateofupload="+this.state.dateUpload+"&datetime="+this.state.date+"&total="+this.state.total+"&currency="+this.state.currency+"&change="+this.state.change+"&items="+JSON.stringify(this.state.items))
+  .then(async(response) => {
+  
+    if (response.status == 200) {
+      return this.setState({ errorTxt: "Updated Text" });
+    } else {
+      return this.setState({ errorTxt: "Erorr Cant Save Change" });
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 }
 
 Delete = async() =>
@@ -113,7 +123,7 @@ Delete = async() =>
 render() {
   if (this.state.loading == true) {
     return (
-      <View style={styles.container}>
+      <View style={Style.container}>
 
           <Text style={{fontSize: 30,fontWeight: 'bold'}}>Loading...</Text>
 
@@ -123,16 +133,16 @@ render() {
   }
   return (
    
-    <View style={styles.container}>
+    <ScrollView  style={styles.container}>
 
       <Text style={styles.title}>Edit , View & Save</Text>
 
       <Image source={{ uri: this.state.uri }} style={{ width: 200, height: 200 }} />
 
 
-  <TextInput
+      <TextInput
     onChangeText={(title) => this.setState({ title })}
-    value={this.state.title}
+    value={this.state.title.toString()}
      style={Style.inputBox}
      theme={theme}
      label="Title"
@@ -141,7 +151,7 @@ render() {
 
   <TextInput
     onChangeText={(date) => this.setState({ date })}
-    value={this.state.date}
+    value={this.state.date.toString()}
      style={Style.inputBox}
      theme={theme}
      label="Date Of Purchase"
@@ -149,7 +159,7 @@ render() {
 
   <TextInput
     onChangeText={(dateUpload) => this.setState({ dateUpload })}
-    value={this.state.dateUpload}
+    value={this.state.dateUpload.toString()}
     style={Style.inputBox}
     theme={theme}
     label="Date Of Upload"
@@ -159,7 +169,7 @@ render() {
 
   <TextInput
     onChangeText={(currency) => this.setState({ currency })}
-    value={this.state.currency}
+    value={this.state.currency.toString()}
     style={Style.inputBox}
     theme={theme}
     label="Currency Type"
@@ -167,7 +177,7 @@ render() {
 
   <TextInput
     onChangeText={(total) => this.setState({ total })}
-    value={this.state.total}
+    value={this.state.total.toString()}
     style={Style.inputBox}
     theme={theme}
     label="Total"
@@ -175,46 +185,52 @@ render() {
 
   <TextInput
     onChangeText={(change) => this.setState({ change })}
-    value={this.state.change}
+    value={this.state.change.toString()}
     style={Style.inputBox}
     theme={theme}
     label="Change"
   />
+  
+  {
+      this.state.items.map((item , index)=>
+      
+        <View style={{flexDirection:"row"}}  key={item.item.toString()}>
+       
+          <View style={{flex:1}}>
+            <TextInput 
+            style={Style.inputBox}
+            theme={theme}
+            label="Item Name"
+            onChangeText={(item) =>
+            {
+              let inputValues=this.state.items;
+              inputValues[index]=item;
+              this.setState({ inputValues,index })
+            }}
+            value={item.item}>
+             
+            </TextInput>
+          </View>
 
-<FlatList
-      style={{flex: 1}}
-          data={this.state.items}
-          keyExtractor={(item) => item.pirce}
-          renderItem={({ item }) => {
-            return (
-              <Fragment>
-                <View style={{flexDirection:"row"}}>
-                  <View style={{flex:1}}>
-                    <TextInput 
-                    style={Style.inputBox}
-                    theme={theme}
-                    label="Item Name"
-                    onChangeText={(item) => this.setState({ item })}
-                    value={this.state.items}>
-                      {item.item}
-                    </TextInput>
-                  </View>
-                  <View style={{flex:1}}>
-                    <TextInput 
-                    style={Style.inputBox}
-                    theme={theme}
-                    label="Price"
-                    onChangeText={(item) => this.setState({ item })}
-                    value={this.state.items}>
-                      {item.price}
-                    </TextInput>
-                  </View>
-                </View>
-                </Fragment>
-            )
-          }}
-        />
+          <View style={{flex:1}}>
+            <TextInput 
+            style={Style.inputBox}
+            theme={theme}
+            label="Price"
+            onChangeText={(item) => {
+              let inputValues2=this.state.items;
+              inputValues2[index]=item;
+              this.setState({ item ,index})
+            }}
 
+            value={item.price}>
+             
+            </TextInput>
+          </View>
+
+        </View> )
+    }
+    
 
 <Button
   title="Save"
@@ -235,7 +251,7 @@ render() {
 />
 
       
-    </View>
+    </ScrollView >
   );
 }
 }
@@ -243,7 +259,7 @@ render() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 30,
     paddingTop: 50,
 

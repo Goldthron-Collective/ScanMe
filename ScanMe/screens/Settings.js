@@ -1,9 +1,19 @@
 import React, { Component } from "react";
-import { View, Text, Alert,Modal,StyleSheet ,Pressable,TextInput} from "react-native";
+import { View, Text, Alert,Modal,StyleSheet ,Pressable} from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
+import { TextInput , MD3LightTheme as DefaultTheme } from 'react-native-paper';
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#04bbd4',
+
+  },
+};
 
 class SignUP extends Component {
   constructor(props) {
@@ -16,6 +26,7 @@ class SignUP extends Component {
       modalVisible: false,
       modalVisible2: false,
       modalVisible3: false,
+      modalVisible4: false,
       pass:"",
       passConf:"",
       curPass:"",
@@ -137,17 +148,10 @@ async componentWillUnmount() {
     return (
      
        
-        <View style={styles.container}>
+        <View style={Style.container}>
 
         <Text>{this.state.errorTxt}</Text>
            
-           <TouchableOpacity
-            onPress={() => this.logout()}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Logout</Text>
-          </TouchableOpacity>
-
           <Modal
         animationType="slide"
         transparent={true}
@@ -157,9 +161,9 @@ async componentWillUnmount() {
           this.setState({modalVisible: !this.state.modalVisible});
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Change Password</Text>
+        <View style={Style.centeredView}>
+          <View style={Style.modalView}>
+            <Text style={Style.modalText}>Change Password</Text>
 
             
             <TextInput
@@ -167,7 +171,8 @@ async componentWillUnmount() {
               secureTextEntry={true}
               onChangeText={(value) => this.setState({ curPass: value })}
               value={this.state.curPass}
-              placeholder="Current Password"
+              label="Current Password"
+              theme={theme}
             />
 
             <TextInput
@@ -175,7 +180,9 @@ async componentWillUnmount() {
               secureTextEntry={true}
               onChangeText={(value) => this.setState({ pass: value })}
               value={this.state.pass}
-              placeholder="New Password"
+              label="New Password"
+              theme={theme}
+            
             />
 
             <TextInput
@@ -183,22 +190,24 @@ async componentWillUnmount() {
               secureTextEntry={true}
               onChangeText={(value) => this.setState({ passConf: value })}
               value={this.state.passConf}
-              placeholder="Confirm Password"
+              label="Re-Type Password"
+              theme={theme}
+              
             />
             <Text>{this.state.errorPass}</Text>
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.confirm()}}
             >
-              <Text style={styles.textStyle}>Change</Text>
+              <Text style={Style.textStyle}>Change</Text>
             </Pressable>
 
 
              <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.setState({modalVisible: !this.state.modalVisible}); this.setState({pass: ""})}}
             >
-              <Text style={styles.textStyle}>Cancel</Text>
+              <Text style={Style.textStyle}>Cancel</Text>
             </Pressable>
          
           </View>
@@ -214,23 +223,23 @@ async componentWillUnmount() {
           this.setState({modalVisible2: !this.state.modalVisible2});
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Are You Sure You Want to Permantly Delete All Your Recipt Data?</Text>
+        <View style={Style.centeredView}>
+          <View style={Style.modalView}>
+            <Text style={Style.modalText}>Are You Sure You Want to Permantly Delete All Your Recipt Data?</Text>
 
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.deleteReciptData(); this.setState({modalVisible2: !this.state.modalVisible2})}}
             >
-              <Text style={styles.textStyle}>Yes</Text>
+              <Text style={Style.textStyle}>Yes</Text>
             </Pressable>
 
 
              <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.setState({modalVisible2: !this.state.modalVisible2}); this.setState({errorDelData: ""})}}
             >
-              <Text style={styles.textStyle}>No</Text>
+              <Text style={Style.textStyle}>No</Text>
             </Pressable>
          
           </View>
@@ -246,49 +255,87 @@ async componentWillUnmount() {
           this.setState({modalVisible3: !this.state.modalVisible3});
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>WARNING YOU WILL PERMANTLY DELETE YOUR ACCOUNT AND ALL DATA AND CANNOT BE UNDONE!</Text>
+        <View style={Style.centeredView}>
+          <View style={Style.modalView}>
+            <Text style={Style.modalText}>WARNING YOU WILL PERMANTLY DELETE YOUR ACCOUNT AND ALL DATA AND CANNOT BE UNDONE!</Text>
 
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.deleteAccount(); this.setState({modalVisible3: !this.state.modalVisible3})}}
             >
-              <Text style={styles.textStyle}>Yes</Text>
+              <Text style={Style.textStyle}>Yes</Text>
             </Pressable>
 
 
              <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.setState({modalVisible3: !this.state.modalVisible3}); this.setState({errorDelData: ""})}}
             >
-              <Text style={styles.textStyle}>No</Text>
+              <Text style={Style.textStyle}>No</Text>
             </Pressable>
          
           </View>
         </View>
       </Modal>
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={this.state.modalVisible4}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          this.setState({modalVisible4: !this.state.modalVisible4});
+        }}
+      >
+        <View style={Style.centeredView}>
+          <View style={Style.modalView}>
+            <Text style={Style.modalText}>Are You Sure You Want To Logout?!</Text>
+
+            <Pressable
+              style={[Style.button]}
+              onPress={() => {this.logout(); this.setState({modalVisible4: !this.state.modalVisible4})}}
+            >
+              <Text style={Style.textStyle}>Yes</Text>
+            </Pressable>
+
+
+             <Pressable
+              style={[Style.button]}
+              onPress={() => {this.setState({modalVisible4: !this.state.modalVisible4}); this.setState({errorDelData: ""})}}
+            >
+              <Text style={Style.textStyle}>No</Text>
+            </Pressable>
+         
+          </View>
+        </View>
+      </Modal>
 
       <Pressable
-        style={[styles.button, styles.buttonOpen]}
+        style={[Style.button]}
+        onPress={() => this.setState({modalVisible4: true})}
+      >
+        <Text style={Style.textStyle}>Logout</Text>
+      </Pressable>
+
+      <Pressable
+        style={[Style.button]}
         onPress={() => this.setState({modalVisible: true})}
       >
-        <Text style={styles.textStyle}>Change Password </Text>
+        <Text style={Style.textStyle}>Change Password </Text>
       </Pressable>
 
       <Pressable
-        style={[styles.button, styles.buttonOpen]}
+        style={[Style.button]}
         onPress={() => this.setState({modalVisible2: true})}
       >
-        <Text style={styles.textStyle}>Delete Recipt Data </Text>
+        <Text style={Style.textStyle}>Delete Recipt Data </Text>
       </Pressable>
 
       <Pressable
-        style={[styles.button, styles.buttonOpen]}
+        style={[Style.button]}
         onPress={() => this.setState({modalVisible3: true})}
       >
-        <Text style={styles.textStyle}>Delete Account</Text>
+        <Text style={Style.textStyle}>Delete Account</Text>
       </Pressable>
 
         </View>
@@ -296,78 +343,5 @@ async componentWillUnmount() {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-   
-  },
-  buttonText:{
-    color: "white"
-  },
-  button:
-  {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: '#1e90ff',
-    margin: 10,
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: 'white',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-  }
-});
-
 
 export default SignUP;

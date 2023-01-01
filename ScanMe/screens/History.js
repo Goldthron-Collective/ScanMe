@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, TouchableOpacity ,StyleSheet,Alert,Modal,Pressable } from "react-native";
-
+import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
 
@@ -99,10 +99,10 @@ loadHistory = async () => {
 
 render() {
   return (
-    <View style={styles.container}>
+    <View style={Style.container}>
 
 
-      <Text style={styles.title}>History</Text>
+      <Text style={Style.title}>History</Text>
 
       <Modal
         animationType="slide"
@@ -113,36 +113,36 @@ render() {
           this.setState({modalVisible: !this.state.modalVisible});
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Select Sort By</Text>
+        <View style={Style.centeredView}>
+          <View style={Style.modalView}>
+            <Text style={Style.modalText}>Select Sort By</Text>
 
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.totalDescending(); this.setState({modalVisible: !this.state.modalVisible})}}
             >
-              <Text style={styles.textStyle}>Total - High to Low</Text>
+              <Text style={Style.textStyle}>Total - High to Low</Text>
             </Pressable>
 
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() =>  {this.totalAscending(); this.setState({modalVisible: !this.state.modalVisible})}}
             >
-              <Text style={styles.textStyle}>Total - Low to High</Text>
+              <Text style={Style.textStyle}>Total - Low to High</Text>
             </Pressable>
 
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.dateUploadDescending(); this.setState({modalVisible: !this.state.modalVisible})}}
             >
-              <Text style={styles.textStyle}>Date Of Upload - Descending</Text>
+              <Text style={Style.textStyle}>Date Of Upload - Descending</Text>
             </Pressable>
 
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[Style.button]}
               onPress={() => {this.dateUploadAscending(); this.setState({modalVisible: !this.state.modalVisible})}}
             >
-              <Text style={styles.textStyle}>Date Of Upload - Ascending</Text>
+              <Text style={Style.textStyle}>Date Of Upload - Ascending</Text>
             </Pressable>
 
          
@@ -150,10 +150,10 @@ render() {
         </View>
       </Modal>
       <Pressable
-        style={[styles.button, styles.buttonOpen]}
+        style={[Style.button]}
         onPress={() => this.setState({modalVisible: true})}
       >
-        <Text style={styles.textStyle}>Sort By </Text>
+        <Text style={Style.textStyle}>Sort By </Text>
       </Pressable>
       <Text > {this.state.sortBy} </Text>
       <FlatList
@@ -162,11 +162,11 @@ render() {
           renderItem={({ item }) => {
             return (
               <TouchableOpacity
-              style={styles.button}
+              style={Style.button}
               onPress={() => this.props.navigation.navigate("MoreHistory",{rec_id: item.recipt_id})}>
-                <Text  style={styles.text} >{item.title} </Text>
-                <Text  style={styles.text}> {item.dateofupload} </Text>
-                <Text  style={styles.text}>{item.total} </Text>
+                <Text  style={Style.text} >{item.title} </Text>
+                <Text  style={Style.text}> {item.dateofupload} </Text>
+                <Text  style={Style.text}>{item.total} </Text>
               </TouchableOpacity>
             )
  
@@ -178,75 +178,5 @@ render() {
   );
 }
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-   
-  },
-  button:
-  {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: 'black',
-    margin: 10,
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    color: 'white',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-  }
-});
 
 export default History

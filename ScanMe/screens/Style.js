@@ -14,6 +14,17 @@ export default StyleSheet.create({
     green: '#254B5A',
     red: '#254B5A'
   },
+  container: {
+    flex: 1,
+    paddingHorizontal: 30,
+    paddingTop: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title:{
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
   welcome:
   {
     justifyContent: 'center',
@@ -110,17 +121,6 @@ buttonText:
     color: 'white',
     fontWeight: '400'
   },
-  button:
-  {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: 'black',
-    margin: 10,
-  },
   text: {
     fontSize: 16,
     lineHeight: 21,
@@ -149,12 +149,6 @@ buttonText:
     shadowRadius: 4,
     elevation: 5
   },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
   textStyle: {
     color: "white",
     fontWeight: "bold",
@@ -163,6 +157,16 @@ buttonText:
   modalText: {
     marginBottom: 15,
     textAlign: "center"
-  }
+  },
+  button:{
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#04bbd4',
+    margin: 10,
+  },
 
 })
