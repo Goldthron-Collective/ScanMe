@@ -98,9 +98,11 @@ buttonText:
   color: 'red'
 },
   AcceptButton: {
-    borderRadius: 30,
-    padding: 10,
+   
+    borderRadius: 10,
+    padding: 20,
     marginHorizontal: 15,
+    marginVertical: 10,
     backgroundColor: 'green'
   },
   AcceptText: {
@@ -109,11 +111,11 @@ buttonText:
     fontWeight: '400'
   },
   DeclineButton: {
-    borderRadius: 30,
-    padding: 10,
+   
+    borderRadius: 10,
+    padding: 20,
     marginHorizontal: 15,
-    marginTop: 5,
-    marginBottom: 15,
+    marginVertical: 10,
     backgroundColor: 'red'
   },
   DeclineText: {
@@ -135,10 +137,26 @@ buttonText:
     marginTop: 22
   },
   modalView: {
-    margin: 20,
+    margin: 30,
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+    imgModalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 0,
+  flex: 1,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {

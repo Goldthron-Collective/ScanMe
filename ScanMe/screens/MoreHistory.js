@@ -1,9 +1,10 @@
-import React, { Component, Fragment } from "react";
-import { View,Text,StyleSheet,ScrollView ,Image,FlatList ,Button } from "react-native";
+import React, { Component, useRef  } from "react";
+import { View,Text,StyleSheet,ScrollView ,Modal,Pressable ,TouchableOpacity,Dimensions } from "react-native";
 import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
 import { TextInput ,MD3LightTheme as DefaultTheme} from 'react-native-paper';
+import { ImageZoom } from '@likashefqet/react-native-image-zoom';
 
 const theme = {
   ...DefaultTheme,
@@ -15,7 +16,7 @@ const theme = {
   },
 };
 
-//ability to zoom into images
+
 
 class MoreHistory extends Component {
   constructor(props) {
@@ -31,9 +32,10 @@ class MoreHistory extends Component {
       currency: "",
       total: "",
       change: "",
-      uri: null,
+      uri: "",
       loading: true,
       recID: this.props.route.params.rec_id,
+      modalVisible: false,
     };
   }
   async componentDidMount() {
@@ -76,19 +78,21 @@ loadHistory = async () => {
         this.setState({change: json[0].changes.toString()});
         this.setState({items: JSON.parse(json[0].items)});
         this.setState({uri:imageData}, () => this.setState({loading: false}));
-      
-  
+   
        })
       
 
      
     } else if (response.status == 403) {
+     
       return this.setState({ errorTxt: "Email doesnt Exist" });
       //used display the resposnes from the server
     } else if (response.status == 403) {
+     
       return this.setState({ errorTxt: "Invalid Password" });
       //each error code returns a diffrent response to the user
     } else {
+     
       return this.setState({ errorTxt: "Something went wrong" });
     }
   })
@@ -104,8 +108,12 @@ Save = async () => {
   .then(async(response) => {
   
     if (response.status == 200) {
-      return this.setState({ errorTxt: "Updated Text" });
+    
+      this.setState({ errorTxt: "Updated Text" });
+      return  this.props.navigation.navigate("History");
+
     } else {
+
       return this.setState({ errorTxt: "Erorr Cant Save Change" });
     }
   })
@@ -119,7 +127,7 @@ Delete = async() =>
 
 }
 
-
+//<Image source={{uri: this.state.uri  }} style={{ width:200, height:200 }} />
 render() {
   if (this.state.loading == true) {
     return (
@@ -137,9 +145,41 @@ render() {
 
       <Text style={styles.title}>Edit , View & Save</Text>
 
-      <Image source={{ uri: this.state.uri }} style={{ width: 200, height: 200 }} />
+      <Text style={Style.textStyle}> {this.state.errorTxt} </Text>
 
+      <Modal
+       animationType="slide"
+       transparent={true}
+       visible={this.state.modalVisible}
+       onRequestClose={() => {
+         Alert.alert("Modal has been closed.");
+         this.setState({modalVisible: !this.state.modalVisible});
+       }}>
+           <View style={Style.centeredView}>
+          <View style={Style.imgModalView}>
+          <Text style={Style.modalText}>Pinch To Zoom</Text>
+            <ImageZoom uri={this.state.uri} style={{ width: Dimensions.get('window').width, height:Dimensions.get('window').height }}/>
+            <Pressable
+              style={Style.button}
+              onPress={() =>  this.setState({modalVisible: !this.state.modalVisible})}
+            >
+              <Text style={Style.textStyle}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
 
+      </Modal>
+
+      <Pressable
+        style={Style.button}
+        onPress={() => this.setState({modalVisible: true})}
+      >
+        <Text style={Style.textStyle}>Show Image Of Recipt</Text>
+      </Pressable>
+      
+      
+      
+    
       <TextInput
     onChangeText={(title) => this.setState({ title })}
     value={this.state.title.toString()}
@@ -193,16 +233,19 @@ render() {
   
   {
       this.state.items.map((item , index)=>
-      
-        <View style={{flexDirection:"row"}}  key={item.item.toString()}>
+        
+
+        <View style={{flexDirection:"row"}}  key={item.item}>
        
-          <View style={{flex:1}}>
+          <View style={{flex:1}} >
             <TextInput 
+           
             style={Style.inputBox}
             theme={theme}
             label="Item Name"
             onChangeText={(item) =>
             {
+            
               let inputValues=this.state.items;
               inputValues[index]=item;
               this.setState({ inputValues,index })
@@ -214,6 +257,7 @@ render() {
 
           <View style={{flex:1}}>
             <TextInput 
+          
             style={Style.inputBox}
             theme={theme}
             label="Price"
@@ -232,24 +276,31 @@ render() {
     }
     
 
-<Button
-  title="Save"
-  color="#00fa00"
-  onPress={this.Save}
-/>
+  <View style={{flexDirection:"row",paddingTop:30,paddingBottom: 100}}  >
+       
+          <View style={{flex:1}}>
 
-<Button
-  title="Delete"
-  color="#ff0000"
-  onPress={this.Delete}
-/>
+          <TouchableOpacity
+            onPress={() => this.Save()}
+            style={Style.AcceptButton}
+          >
+            <Text style={Style.buttonText}>Save</Text>
+          </TouchableOpacity>
 
-<Button
-  title="Go Back"
-  color="#ff0000"
-  onPress={() =>  this.props.navigation.navigate('History')}
-/>
+          </View>
 
+          <View style={{flex:1}}>
+
+          <TouchableOpacity
+            onPress={() => this.Delete()}
+            style={Style.DeclineButton}
+          >
+            <Text style={Style.buttonText}>Delete</Text>
+          </TouchableOpacity>
+
+          </View>
+
+        </View>
       
     </ScrollView >
   );
@@ -262,6 +313,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 30,
     paddingTop: 50,
+
 
   },
   title: {

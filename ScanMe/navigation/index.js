@@ -13,9 +13,11 @@ import Camera from '../screens/Camera'
 import History from '../screens/History'
 import Settings from '../screens/Settings'
 import ViewHistory from '../screens/MoreHistory'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 const Tab = createBottomTabNavigator();
+
 
 class index extends Component {
 
@@ -90,8 +92,19 @@ class index extends Component {
         }
       }}/>
 
-      <Tab.Screen name="Save" component={Save} options={{headerShown: false ,  tabBarShowLabel: false,}} />
-      <Tab.Screen name="MoreHistory" component={ViewHistory} options={{headerShown: false,  tabBarShowLabel: false,}} />
+      <Tab.Screen name="Save" component={Save} options= {{headerShown: false ,  tabBarShowLabel: false,}} />
+      <Tab.Screen name="MoreHistory" component={ViewHistory} options={({ navigation }) =>
+      ({
+           title: 'History',
+          headerLeft: () => (
+            <TouchableOpacity 
+            style={{ marginLeft: 10 }}
+            onPress={() => navigation.navigate('History')}
+            > 
+              <Image style={{height: 45, width: 45}} source={require('../assets/images/left.png')} />
+              </TouchableOpacity>
+          ),
+          tabBarShowLabel: false,})} />
     </Tab.Navigator>
     
     );
