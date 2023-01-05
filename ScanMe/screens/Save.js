@@ -21,10 +21,10 @@ class Save extends Component {
     super(props);
       this.state = {
         data: this.props.route.params.arrData,
-        date: "Not Found",
-        currency: "Not Found",
-        change: "Not Found",
-        total: "Not Found",
+        date: "Loading",
+        currency: "Loading",
+        change: "Loading",
+        total: "Loading",
         items: [],
         itemPrice: [],
         map: [],
@@ -35,12 +35,21 @@ class Save extends Component {
 
 
 async componentDidMount() {
-    this.unsubscribe = this.props.navigation.addListener("focus", () => {
-      this.getDate();
-      this.getCurrency();
-      this.getChange();
-      this.getTotal();
-      this.getItems();
+    this.unsubscribe = this.props.navigation.addListener("focus", async() => {
+      await this.getDate().then(
+        await this.getCurrency().then(
+          await this.getChange().then(
+            await this.getTotal().then(
+              await this.getItems()
+
+            ).catch(e => {console.log(e)})
+          ).catch(e => {console.log(e)})
+        ).catch(e => {console.log(e)})
+      ).catch(e => {console.log(e)});
+     
+      
+      
+      
       
 
   });
@@ -75,18 +84,18 @@ async componentWillUnmount() {
     {
       this.setState({date: date}, () => {
         
-        console.log("date = " +this.state.date);
+       // console.log("date = " +this.state.date);
       });
     }
     else
     {
-      this.setState({date: new Date()}, () => {
+      this.setState({date: "Not Found (DD/MM/YYYY)"}, () => {
        
-        console.log("date not found = " + this.state.date);
+        //console.log("date not found = " + this.state.date);
       });
     }
   
-
+    return;
 
   }
   getCurrency = async () => 
@@ -109,6 +118,7 @@ async componentWillUnmount() {
     {
       this.setState({currency: "£"});
     }
+    return;
   }
   getChange = async () => 
   {
@@ -137,11 +147,13 @@ async componentWillUnmount() {
         
         break;
       }
+     
     }
 
     if(changeMatch == null)
     {
       this.setState({change: "0"});
+      
       Alert.alert(
         "Change Not Found",
         "Please Enter The Change",
@@ -149,11 +161,10 @@ async componentWillUnmount() {
            { text: "OK", onPress: () => console.log("OK Pressed") }
         ]
       );
-      
+    
     }
 
-    
-    
+    return;
   }
   getTotal = async () => 
   {
@@ -179,7 +190,7 @@ async componentWillUnmount() {
       this.setState({total: "0"});
     }
    
-    
+       return;
   }
   getItems = async () => 
   {
@@ -219,6 +230,7 @@ async componentWillUnmount() {
     }
 
     console.log(map);
+    return;
   }
   validateSave = async () => 
   {

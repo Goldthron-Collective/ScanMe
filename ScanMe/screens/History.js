@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { View, Text, FlatList, TouchableOpacity ,StyleSheet,Alert,Modal,Pressable } from "react-native";
 import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,6 +7,9 @@ import { SERVER_IP } from "../serverConnect"
 //sort by total 
 //categorise by month (change start and end date of month)
 //total amount spent this month
+// add search ( filter what to search by)
+//total each month
+// categroise i.e food ,shopping,books,clothing etc
 
 class History extends Component {
   constructor(props) {
@@ -96,6 +99,16 @@ loadHistory = async () => {
   });
   
 };
+renderDate = async (date) => {
+
+  console.log(date);
+  return(
+    <View>
+    <Text>hell{date}</Text>
+    </View>
+  )
+
+}
 
 render() {
   return (
@@ -159,8 +172,15 @@ render() {
       <FlatList
           data={this.state.data}
           keyExtractor={(item) => item.recipt_id}
-          renderItem={({ item }) => {
+          renderItem={({ item ,index}) => {
+            
+            //
+          //this.renderDate(item.dateofupload)
+            
+        //this.state.data[index].dateofupload
             return (
+              <Fragment>
+              <Text>{this.state.data[index].dateofupload}</Text>
               <TouchableOpacity
               style={Style.button}
               onPress={() => this.props.navigation.navigate("MoreHistory",{rec_id: item.recipt_id})}>
@@ -168,6 +188,7 @@ render() {
                 <Text  style={Style.text}> {item.dateofupload} </Text>
                 <Text  style={Style.text}>{item.total} </Text>
               </TouchableOpacity>
+              </Fragment>
             )
  
           }}
