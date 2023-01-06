@@ -21,6 +21,11 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  containerHis:{
+    flex: 1,
+    paddingTop: 80,
+    paddingHorizontal: 30,
+  },
   title:{
     fontSize: 30,
     fontWeight: 'bold',
@@ -186,5 +191,18 @@ buttonText:
     backgroundColor: '#04bbd4',
     margin: 10,
   },
+  buttonHistory:{
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#04bbd4',
+    margin: 10,
+  },
+  imgHistory:{
+    width: 50,
+    height: 50,
+  }
 
 })

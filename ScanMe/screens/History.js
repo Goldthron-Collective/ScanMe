@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { View, Text, FlatList, TouchableOpacity ,StyleSheet,Alert,Modal,Pressable } from "react-native";
+import { View, Text, FlatList, TouchableOpacity ,Image,Alert,Modal,Pressable } from "react-native";
 import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
@@ -10,6 +10,30 @@ import { SERVER_IP } from "../serverConnect"
 // add search ( filter what to search by)
 //total each month
 // categroise i.e food ,shopping,books,clothing etc
+
+const months = [
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
+  'MAY',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC'
+];
+const days = [
+  'SUNDAY',
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY'
+];
 
 class History extends Component {
   constructor(props) {
@@ -99,20 +123,83 @@ loadHistory = async () => {
   });
   
 };
-renderDate = async (date) => {
 
-  console.log(date);
+getImage = (data) =>{
+
+  //let company = "";
+  let url = "https://logo.clearbit.com/";
+
+ 
+  fetch('https://autocomplete.clearbit.com/v1/companies/suggest?query='+data)
+  .then(response => response.json()).then(json => {
+      url = url+json[0].domain;  
+    
+  }).then(() => {
+    console.log(url);
+
+    return(
+      <View>
+      <Image
+        style={Style.imgHistory}
+        source={{uri: url,}}
+      />
+      </View>
+    )
+  })
+
+
+
+    
+ 
+}
+renderDate = (date,ind) => {
+
+  const day = new Date(date.toString());
+  const formatDate = days[day.getDay()] + ", " + day.getDate() + " " + months[day.getMonth()] +" " + day.getFullYear()
+
+  this.state.data[ind].dateofupload = formatDate;
+
+  const first = this.state.data.map(e => e.dateofupload).indexOf(formatDate);
+  //const last = this.state.data.map(e => e.dateofupload).lastIndexOf(formatDate);
+
+  if(ind > first)
+  {
+    return(
+      <View>
+      <Text></Text>
+      </View>
+    )
+  }
+
+  
+  let monthTotal = 0;
+
+  for(let i = 0;i<this.state.data.length; i++)
+  {
+    if(this.state.data[i].dateofupload == formatDate)
+    {
+      monthTotal += this.state.data[i].total;
+    }
+  }
+
   return(
-    <View>
-    <Text>hell{date}</Text>
+
+    <View style={{flexDirection:'row', flexWrap: "wrap",justifyContent:'space-between'}}>
+      <View>
+        <Text>{formatDate}</Text>
+      </View>
+      <View>
+        <Text>{monthTotal}</Text>
+      </View>
     </View>
+
   )
 
 }
 
 render() {
   return (
-    <View style={Style.container}>
+    <View style={Style.containerHis}>
 
 
       <Text style={Style.title}>History</Text>
@@ -169,6 +256,7 @@ render() {
         <Text style={Style.textStyle}>Sort By </Text>
       </Pressable>
       <Text > {this.state.sortBy} </Text>
+      
       <FlatList
           data={this.state.data}
           keyExtractor={(item) => item.recipt_id}
@@ -180,13 +268,23 @@ render() {
         //this.state.data[index].dateofupload
             return (
               <Fragment>
-              <Text>{this.state.data[index].dateofupload}</Text>
+              {this.renderDate(this.state.data[index].dateofupload,index)}
+              
               <TouchableOpacity
-              style={Style.button}
+              style={Style.buttonHistory}
               onPress={() => this.props.navigation.navigate("MoreHistory",{rec_id: item.recipt_id})}>
-                <Text  style={Style.text} >{item.title} </Text>
-                <Text  style={Style.text}> {item.dateofupload} </Text>
-                <Text  style={Style.text}>{item.total} </Text>
+
+                <View style={{flexDirection:'row', flexWrap: "wrap",justifyContent:'space-between'}}>
+                  <View>
+                    {this.getImage(this.state.data[index].title)}
+                  </View>
+                  <View>
+                    <Text>{item.title}</Text>
+                  </View>
+                  <View>
+                    <Text>{item.total}</Text>
+                  </View>
+                </View>
               </TouchableOpacity>
               </Fragment>
             )

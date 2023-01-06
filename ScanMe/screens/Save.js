@@ -153,15 +153,7 @@ async componentWillUnmount() {
     if(changeMatch == null)
     {
       this.setState({change: "0"});
-      
-      Alert.alert(
-        "Change Not Found",
-        "Please Enter The Change",
-        [
-           { text: "OK", onPress: () => console.log("OK Pressed") }
-        ]
-      );
-    
+     
     }
 
     return;
