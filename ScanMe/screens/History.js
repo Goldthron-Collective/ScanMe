@@ -67,7 +67,7 @@ totalAscending = async() =>
 }
 totalDescending = async() => 
 {
-  const data = [...this.state.data].sort((a, b) => a.total - b.total);
+  const data = [...this.state.data].sort((b, a) => a.total - b.total);
   this.setState({sortBy: "Total - High To Low"});
   this.setState({data: data});
 }
@@ -101,6 +101,20 @@ loadHistory = async () => {
     if (response.status == 200) {
        response.json().then(async(json) => {
 
+
+        for(let i = 0; i < json.length; i++)
+        {
+          
+          const response = await fetch('https://autocomplete.clearbit.com/v1/companies/suggest?query='+json[i].title);
+          const responses = await response.json();
+          json[i].currency = responses[0].logo;
+        }
+        // add new object called image
+        // do item.image in render within the URL;
+
+
+        
+
         this.setState({data: json});
        
        
@@ -124,34 +138,6 @@ loadHistory = async () => {
   
 };
 
-getImage = (data) =>{
-
-  //let company = "";
-  let url = "https://logo.clearbit.com/";
-
- 
-  fetch('https://autocomplete.clearbit.com/v1/companies/suggest?query='+data)
-  .then(response => response.json()).then(json => {
-      url = url+json[0].domain;  
-    
-  }).then(() => {
-    console.log(url);
-
-    return(
-      <View>
-      <Image
-        style={Style.imgHistory}
-        source={{uri: url,}}
-      />
-      </View>
-    )
-  })
-
-
-
-    
- 
-}
 renderDate = (date,ind) => {
 
   const day = new Date(date.toString());
@@ -164,11 +150,7 @@ renderDate = (date,ind) => {
 
   if(ind > first)
   {
-    return(
-      <View>
-      <Text></Text>
-      </View>
-    )
+    return;
   }
 
   
@@ -181,15 +163,17 @@ renderDate = (date,ind) => {
       monthTotal += this.state.data[i].total;
     }
   }
+  monthTotal = "£" + Math.round(monthTotal * 100) / 100;
+
 
   return(
 
-    <View style={{flexDirection:'row', flexWrap: "wrap",justifyContent:'space-between'}}>
+    <View style={{flexDirection:'row', flexWrap: "wrap",justifyContent:'space-between' , paddingVertical: 15}}>
       <View>
-        <Text>{formatDate}</Text>
+        <Text style={Style.textDate}>{formatDate}</Text>
       </View>
       <View>
-        <Text>{monthTotal}</Text>
+        <Text style={Style.textMonthTotal}>{monthTotal}</Text>
       </View>
     </View>
 
@@ -256,35 +240,37 @@ render() {
         <Text style={Style.textStyle}>Sort By </Text>
       </Pressable>
       <Text > {this.state.sortBy} </Text>
+
+     
       
       <FlatList
+            style={{marginTop: 30, paddingBottom: 200}}
           data={this.state.data}
           keyExtractor={(item) => item.recipt_id}
           renderItem={({ item ,index}) => {
-            
-            //
-          //this.renderDate(item.dateofupload)
-            
-        //this.state.data[index].dateofupload
             return (
               <Fragment>
               {this.renderDate(this.state.data[index].dateofupload,index)}
-              
               <TouchableOpacity
               style={Style.buttonHistory}
               onPress={() => this.props.navigation.navigate("MoreHistory",{rec_id: item.recipt_id})}>
 
                 <View style={{flexDirection:'row', flexWrap: "wrap",justifyContent:'space-between'}}>
-                  <View>
-                    {this.getImage(this.state.data[index].title)}
+                  <View >
+
+                  <View style={{flexDirection:'row', flexWrap: "wrap",justifyContent:'space-evenly'}}>
+
+                    <Image style={Style.imgHistory} source={{uri: item.currency}}/>
+
+                    <Text style={Style.textTitle}>{item.title}</Text>
+                    </View>
+
                   </View>
                   <View>
-                    <Text>{item.title}</Text>
-                  </View>
-                  <View>
-                    <Text>{item.total}</Text>
+                    <Text style={Style.textTotal}>{item.total}</Text>
                   </View>
                 </View>
+
               </TouchableOpacity>
               </Fragment>
             )
@@ -293,6 +279,7 @@ render() {
           
         />
       
+
     </View>
   );
 }

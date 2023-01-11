@@ -1,7 +1,5 @@
 import { WhiteBalance } from 'expo-camera/build/Camera.types'
 import { StyleSheet } from 'react-native'
-import { color } from 'react-native-reanimated'
-//import { color } from 'react-native-reanimated'
 
 export default StyleSheet.create({
   Colors:
@@ -24,7 +22,7 @@ export default StyleSheet.create({
   containerHis:{
     flex: 1,
     paddingTop: 80,
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
   },
   title:{
     fontSize: 30,
@@ -192,17 +190,37 @@ buttonText:
     margin: 10,
   },
   buttonHistory:{
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: '#04bbd4',
-    margin: 10,
+    paddingVertical: 15,
+   
   },
   imgHistory:{
-    width: 50,
-    height: 50,
+    width: 30,
+    height: 30,
+    borderRadius: 5,
+    borderColor: 'white',
+    borderWidth: 0.5,
+    marginRight: 20,
+  },
+  textTitle:{
+    color: 'black',
+    fontSize: 17,
+
+  },
+  textDate:{
+    color: '#919191',
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  textTotal:{
+    fontSize: 19,
+    fontWeight: "400",
+  },
+  textMonthTotal:{
+    fontSize: 13,
+    fontWeight: "400",
+    color: '#919191'
   }
 
 })

@@ -62,7 +62,7 @@ async componentWillUnmount() {
 
   checkLoggedIn = async () => {
     const id = await AsyncStorage.getItem("@id");
-    console.log(id);
+
 
     if (id == null) {
       this.props.navigation.navigate("Login");
