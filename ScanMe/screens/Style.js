@@ -221,6 +221,17 @@ buttonText:
     fontSize: 13,
     fontWeight: "400",
     color: '#919191'
-  }
+  },
+
+  datePicker: {
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    width: 320,
+    height: 260,
+    display: 'flex',
+    color: 'black'
+
+  },
+  
 
 })

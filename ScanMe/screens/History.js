@@ -4,6 +4,8 @@ import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
 
+
+
 //sort by total 
 //categorise by month (change start and end date of month)
 //total amount spent this month

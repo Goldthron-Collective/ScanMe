@@ -69,6 +69,7 @@ async componentWillUnmount() {
       if(date != null)
       {
         date = this.state.data[i];
+        
         break;
       }
 
@@ -213,6 +214,7 @@ async componentWillUnmount() {
   
     if(map.length != 0)
     {
+      console.log(map);
       this.setState({map: map});
     }
     else
@@ -273,54 +275,61 @@ render(){
 
       <Text style={Style.title}>Edit & Save</Text>
 
-        <TextInput
-          label="Title"
-          onChangeText={(title) => this.setState({ title })}
-          value={this.state.title.toString()}
-          style={Style.inputBox}
-          theme={theme}
-        />
-      
-       
-        <TextInput
-          onChangeText={(date) => this.setState({ date })}
-          value={this.state.date.toString()}
-          style={Style.inputBox}
-          theme={theme}
-          label="Date Of Purchase"
-        />
-
-        
-        <TextInput
-          onChangeText={(currency) => this.setState({ currency })}
-          value={this.state.currency.toString()}
-          style={Style.inputBox}
-          theme={theme}
-          label="Currency Type"
-        />
-
-        
-        <TextInput
-          onChangeText={(total) => this.setState({ total })}
-          value={this.state.total.toString()}
-          style={Style.inputBox}
-          theme={theme}
-          label="Total"
-        />
-
-       
-        <TextInput
-          onChangeText={(change) => this.setState({ change })}
-          value={this.state.change.toString()}
-          style={Style.inputBox}
-          theme={theme}
-          label="Change"
-        />
+ 
 
       <FlatList
       style={{flex: 1}}
           data={this.state.map}
           keyExtractor={(item) => item.pirce}
+          ListHeaderComponent={() => (
+            <View>
+
+              <TextInput
+                  label="Title"
+                  onChangeText={(title) => this.setState({ title })}
+                  value={this.state.title.toString()}
+                  style={Style.inputBox}
+                  theme={theme}
+                />
+              
+              
+                <TextInput
+                  onChangeText={(date) => this.setState({ date })}
+                  value={this.state.date.toString()}
+                  style={Style.inputBox}
+                  theme={theme}
+                  label="Date Of Purchase"
+                />
+
+                
+                <TextInput
+                  onChangeText={(currency) => this.setState({ currency })}
+                  value={this.state.currency.toString()}
+                  style={Style.inputBox}
+                  theme={theme}
+                  label="Currency Type"
+                />
+
+                
+                <TextInput
+                  onChangeText={(total) => this.setState({ total })}
+                  value={this.state.total.toString()}
+                  style={Style.inputBox}
+                  theme={theme}
+                  label="Total"
+                />
+
+              
+                <TextInput
+                  onChangeText={(change) => this.setState({ change })}
+                  value={this.state.change.toString()}
+                  style={Style.inputBox}
+                  theme={theme}
+                  label="Change"
+                />
+                
+            </View>
+          )}
           renderItem={({ item }) => {
             return (
               <Fragment>

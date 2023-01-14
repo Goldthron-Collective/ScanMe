@@ -1,10 +1,11 @@
-import React, { Component, useRef  } from "react";
-import { View,Text,StyleSheet,ScrollView ,Modal,Pressable ,TouchableOpacity,Dimensions } from "react-native";
+import React, { Component ,Fragment ,useState } from "react";
+import { View,Text,StyleSheet ,Modal,Pressable ,TouchableOpacity,Dimensions ,FlatList,Button,SafeAreaView} from "react-native";
 import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
 import { TextInput ,MD3LightTheme as DefaultTheme} from 'react-native-paper';
 import { ImageZoom } from '@likashefqet/react-native-image-zoom';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const theme = {
   ...DefaultTheme,
@@ -16,6 +17,90 @@ const theme = {
   },
 };
 
+const MySubComponent = (props) => {
+
+  const [datePicker, setDatePicker] = useState(false);
+ 
+  const [date, setDate] = useState(new Date());
+ 
+  function showDatePicker() {
+    setDatePicker(true);
+  };
+
+  function onDateSelected(event, value) {
+    setDate(value);
+  };
+  function closeDatePicker(){
+    setDatePicker(false);
+  }
+  function saveCloseDatePicker(event, value){
+    setDate(value);
+    setDatePicker(false);
+
+  }
+
+  
+  if (props.display) {
+
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+  
+      {datePicker && (
+        <View style={{flexDirection:"row"}}>
+        <View style={{flex:1}}>
+          <Button
+            onPress={closeDatePicker}
+            title="Cancel"
+            color="#841584"
+          />
+       
+        </View>
+        <View style={{flex:1}}>
+        <Button
+            onPress={saveCloseDatePicker}
+            title="Save"
+            color="#841584"
+          />
+          
+        </View>
+      </View>
+      )}
+        {datePicker && (
+          <DateTimePicker
+            value={date}
+            mode={'datetime'}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            is24Hour={true}
+            textColor="black"
+            onChange={onDateSelected}
+            style={Style.datePicker}
+          />
+
+
+        )}
+       
+   
+       <Pressable onPress={showDatePicker}>
+        <View pointerEvents="none">
+        <TextInput
+                value={date.toLocaleString('en-GB', { timeZone: 'UTC' })}
+                style={Style.inputBox}
+                theme={theme}
+                label={props.type == 'upload' ? 'Upload Date' : 'Recipt Date'}
+                />
+        </View>
+        </Pressable>
+
+
+       
+ 
+    
+    </SafeAreaView>
+  );
+
+      }
+};
 
 
 class MoreHistory extends Component {
@@ -36,6 +121,7 @@ class MoreHistory extends Component {
       loading: true,
       recID: this.props.route.params.rec_id,
       modalVisible: false,
+
     };
   }
   async componentDidMount() {
@@ -76,8 +162,9 @@ loadHistory = async () => {
         this.setState({dateUpload: json[0].dateofupload});
         this.setState({total: json[0].total.toString()});
         this.setState({change: json[0].changes.toString()});
-        this.setState({items: JSON.parse(json[0].items)});
+        this.setState({items: JSON.parse(json[0].items.toString())});
         this.setState({uri:imageData}, () => this.setState({loading: false}));
+
    
        })
       
@@ -127,7 +214,6 @@ Delete = async() =>
 
 }
 
-//<Image source={{uri: this.state.uri  }} style={{ width:200, height:200 }} />
 render() {
   if (this.state.loading == true) {
     return (
@@ -141,172 +227,152 @@ render() {
   }
   return (
    
-    <ScrollView  style={styles.container}>
+    <View  style={styles.container}>
+
 
       <Text style={styles.title}>Edit , View & Save</Text>
 
       <Text style={Style.textStyle}> {this.state.errorTxt} </Text>
 
-      <Modal
-       animationType="slide"
-       transparent={true}
-       visible={this.state.modalVisible}
-       onRequestClose={() => {
-         Alert.alert("Modal has been closed.");
-         this.setState({modalVisible: !this.state.modalVisible});
-       }}>
-           <View style={Style.centeredView}>
-          <View style={Style.imgModalView}>
-          <Text style={Style.modalText}>Pinch To Zoom</Text>
-            <ImageZoom uri={this.state.uri} style={{ width: Dimensions.get('window').width, height:Dimensions.get('window').height }}/>
-            <Pressable
-              style={Style.button}
-              onPress={() =>  this.setState({modalVisible: !this.state.modalVisible})}
-            >
-              <Text style={Style.textStyle}>Close</Text>
-            </Pressable>
-          </View>
-        </View>
-
-      </Modal>
-
-      <Pressable
-        style={Style.button}
-        onPress={() => this.setState({modalVisible: true})}
-      >
-        <Text style={Style.textStyle}>Show Image Of Recipt</Text>
-      </Pressable>
       
-      
-      
-    
-      <TextInput
-    onChangeText={(title) => this.setState({ title })}
-    value={this.state.title.toString()}
-     style={Style.inputBox}
-     theme={theme}
-     label="Title"
-  />
+       <FlatList
+      style={{flex: 1}}
+          data={this.state.items}
+         
+          keyExtractor={(item) => item.pirce}
+          ListHeaderComponent={() => (
+            <View>
 
 
-  <TextInput
-    onChangeText={(date) => this.setState({ date })}
-    value={this.state.date.toString()}
-     style={Style.inputBox}
-     theme={theme}
-     label="Date Of Purchase"
-  />
+                <Modal
+                animationType="slide"
+                transparent={true}
+                visible={this.state.modalVisible}
+                onRequestClose={() => {
+                  Alert.alert("Modal has been closed.");
+                  this.setState({modalVisible: !this.state.modalVisible});
+                }}>
+                    <View style={Style.centeredView}>
+                    <View style={Style.imgModalView}>
+                    <Text style={Style.modalText}>Pinch To Zoom</Text>
+                      <ImageZoom uri={this.state.uri} style={{ width: Dimensions.get('window').width, height:Dimensions.get('window').height }}/>
+                      <Pressable
+                        style={Style.button}
+                        onPress={() =>  this.setState({modalVisible: !this.state.modalVisible})}
+                      >
+                        <Text style={Style.textStyle}>Close</Text>
+                      </Pressable>
+                    </View>
+                  </View>
 
-  <TextInput
-    onChangeText={(dateUpload) => this.setState({ dateUpload })}
-    value={this.state.dateUpload.toString()}
-    style={Style.inputBox}
-    theme={theme}
-    label="Date Of Upload"
+                </Modal>
 
+                <Pressable
+                  style={Style.button}
+                  onPress={() => this.setState({modalVisible: true})}
+                >
+                  <Text style={Style.textStyle}>Show Image Of Recipt</Text>
+                </Pressable>
 
-  />
+                <TextInput
+                onChangeText={(title) => this.setState({ title })}
+                value={this.state.title.toString()}
+                style={Style.inputBox}
+                theme={theme}
+                label="Title"
+                />
 
-  <TextInput
-    onChangeText={(currency) => this.setState({ currency })}
-    value={this.state.currency.toString()}
-    style={Style.inputBox}
-    theme={theme}
-    label="Currency Type"
-  />
+                <MySubComponent display={true} data={this.state.date} type={'recipt'}/>
 
-  <TextInput
-    onChangeText={(total) => this.setState({ total })}
-    value={this.state.total.toString()}
-    style={Style.inputBox}
-    theme={theme}
-    label="Total"
-  />
+                <MySubComponent display={true} data={this.state.dateUpload} type={'upload'}/>
 
-  <TextInput
-    onChangeText={(change) => this.setState({ change })}
-    value={this.state.change.toString()}
-    style={Style.inputBox}
-    theme={theme}
-    label="Change"
-  />
-  
-  {
-      this.state.items.map((item , index)=>
-        
+                <TextInput
+                onChangeText={(currency) => this.setState({ currency })}
+                value={this.state.currency.toString()}
+                style={Style.inputBox}
+                theme={theme}
+                label="Currency Type"
+                />
 
-        <View style={{flexDirection:"row"}}  key={item.item}>
+                <TextInput
+                onChangeText={(total) => this.setState({ total })}
+                value={this.state.total.toString()}
+                style={Style.inputBox}
+                theme={theme}
+                label="Total"
+                />
+
+                <TextInput
+                onChangeText={(change) => this.setState({ change })}
+                value={this.state.change.toString()}
+                style={Style.inputBox}
+                theme={theme}
+                label="Change"
+                />
+
+            </View>
+          )}
+          renderItem={({ item }) => {
+            return (
+              <Fragment>
+                <View style={{flexDirection:"row"}}>
+                  <View style={{flex:1}}>
+                    <TextInput 
+                    style={Style.inputBox}
+                    theme={theme}
+                    label="Item Name"
+                    onChangeText={(item) => this.setState({ item })}
+                    value={this.state.items }>
+                      {item.item}
+                    </TextInput>
+                  </View>
+                  <View style={{flex:1}}>
+                    <TextInput 
+                    style={Style.inputBox}
+                    theme={theme}
+                    label="Price"
+                    onChangeText={(item) => this.setState({ item})}
+                    value={this.state.items}>
+                      {item.price}
+                    </TextInput>
+                  </View>
+                </View>
+                </Fragment>
+            )
+          }}
+        />
+         <View style={{flexDirection:"row",paddingTop:0}}  >
        
-          <View style={{flex:1}} >
-            <TextInput 
-           
-            style={Style.inputBox}
-            theme={theme}
-            label="Item Name"
-            onChangeText={(item) =>
-            {
-            
-              let inputValues=this.state.items;
-              inputValues[index]=item;
-              this.setState({ inputValues,index })
-            }}
-            value={item.item}>
-             
-            </TextInput>
-          </View>
+       <View style={{flex:1}}>
 
-          <View style={{flex:1}}>
-            <TextInput 
-          
-            style={Style.inputBox}
-            theme={theme}
-            label="Price"
-            onChangeText={(item) => {
-              let inputValues2=this.state.items;
-              inputValues2[index]=item;
-              this.setState({ item ,index})
-            }}
+       <TouchableOpacity
+         onPress={() => this.Save()}
+         style={Style.AcceptButton}
+       >
+         <Text style={Style.buttonText}>Save</Text>
+       </TouchableOpacity>
 
-            value={item.price}>
-             
-            </TextInput>
-          </View>
+       </View>
 
-        </View> )
-    }
-    
+       <View style={{flex:1}}>
 
-  <View style={{flexDirection:"row",paddingTop:30,paddingBottom: 100}}  >
-       
-          <View style={{flex:1}}>
+       <TouchableOpacity
+         onPress={() => this.Delete()}
+         style={Style.DeclineButton}
+       >
+         <Text style={Style.buttonText}>Delete</Text>
+       </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => this.Save()}
-            style={Style.AcceptButton}
-          >
-            <Text style={Style.buttonText}>Save</Text>
-          </TouchableOpacity>
+       </View>
 
-          </View>
+     </View>
 
-          <View style={{flex:1}}>
-
-          <TouchableOpacity
-            onPress={() => this.Delete()}
-            style={Style.DeclineButton}
-          >
-            <Text style={Style.buttonText}>Delete</Text>
-          </TouchableOpacity>
-
-          </View>
-
-        </View>
+ 
       
-    </ScrollView >
+    </View >
   );
 }
 }
-
 
 const styles = StyleSheet.create({
   container: {
