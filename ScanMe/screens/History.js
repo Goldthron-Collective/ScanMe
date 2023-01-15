@@ -45,6 +45,7 @@ class History extends Component {
       id : "",
       errorTxt: "",
       data: "",
+      loading: true,
       modalVisible: false,
       sortBy: "Date Of Upload - Descending",
     };
@@ -111,13 +112,8 @@ loadHistory = async () => {
           const responses = await response.json();
           json[i].currency = responses[0].logo;
         }
-        // add new object called image
-        // do item.image in render within the URL;
-
-
-        
-
         this.setState({data: json});
+        this.setState({loading: false})
        
        
        })
@@ -184,6 +180,16 @@ renderDate = (date,ind) => {
 }
 
 render() {
+  if (this.state.loading == true) {
+    return (
+      <View style={Style.container}>
+
+          <Text style={{fontSize: 30,fontWeight: 'bold'}}>Loading...</Text>
+
+
+        </View>
+    )
+  }
   return (
     <View style={Style.containerHis}>
 
@@ -284,6 +290,7 @@ render() {
 
     </View>
   );
+        
 }
 }
 

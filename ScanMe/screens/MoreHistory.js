@@ -1,5 +1,5 @@
 import React, { Component ,Fragment ,useState } from "react";
-import { View,Text,StyleSheet ,Modal,Pressable ,TouchableOpacity,Dimensions ,FlatList,Button,SafeAreaView} from "react-native";
+import { View,Text,StyleSheet ,Modal,Pressable ,TouchableOpacity,Dimensions ,FlatList,Button,SafeAreaView,ActivityIndicator} from "react-native";
 import Style from "./Style";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SERVER_IP } from "../serverConnect"
@@ -28,6 +28,7 @@ const MySubComponent = (props) => {
   };
 
   function onDateSelected(event, value) {
+    console.log(value + " SET");
     setDate(value);
   };
   function closeDatePicker(){
@@ -42,11 +43,23 @@ const MySubComponent = (props) => {
   
   if (props.display) {
 
-
+    console.log(date);
   return (
     <SafeAreaView style={{ flex: 1 }}>
   
-      {datePicker && (
+  
+        {datePicker && (
+          <DateTimePicker
+            value={date}
+            mode={'datetime'}
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            is24Hour={true}
+            textColor="black"
+            onChange={onDateSelected}
+            style={Style.datePicker}
+          />
+        )}
+           {datePicker && (
         <View style={{flexDirection:"row"}}>
         <View style={{flex:1}}>
           <Button
@@ -66,25 +79,11 @@ const MySubComponent = (props) => {
         </View>
       </View>
       )}
-        {datePicker && (
-          <DateTimePicker
-            value={date}
-            mode={'datetime'}
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            is24Hour={true}
-            textColor="black"
-            onChange={onDateSelected}
-            style={Style.datePicker}
-          />
-
-
-        )}
-       
    
        <Pressable onPress={showDatePicker}>
         <View pointerEvents="none">
         <TextInput
-                value={date.toLocaleString('en-GB', { timeZone: 'UTC' })}
+                value={date.toLocaleString('en-GB', { timeZone: 'UTC' }).toString()}
                 style={Style.inputBox}
                 theme={theme}
                 label={props.type == 'upload' ? 'Upload Date' : 'Recipt Date'}
@@ -110,23 +109,31 @@ class MoreHistory extends Component {
     this.state = {
       id : "",
       errorTxt: "",
-      items: [],
+      items: [{item: "", price: ""}],
       date: "",
       dateUpload:"",
       title: "",
       currency: "",
       total: "",
       change: "",
-      uri: "",
+      uri: null,
       loading: true,
       recID: this.props.route.params.rec_id,
       modalVisible: false,
+      loadingIMG: "",
 
     };
   }
+ // componentWillReceiveProps(nextProps) {
+  //  this.showCategory(nextProps);
+ // }
+  
+  
+
   async componentDidMount() {
+   
     this.unsubscribe = this.props.navigation.addListener("focus", () => {
-    
+      this.setState({loading: true});
     this.loadHistory();
    
 
@@ -134,6 +141,48 @@ class MoreHistory extends Component {
   }
 async componentWillUnmount() {
   this.unsubscribe();
+}
+loadingScreen = () => {
+  if(this.state.loadingIMG == true)
+  {
+    return(
+      
+           <ActivityIndicator size="large"  color="#0000ff"/>
+      
+    )
+  }
+  else
+  {
+    return;
+  }
+}
+loadImage = async () => {
+
+
+  return fetch(SERVER_IP+"recimage?id="+this.state.id+"&recid="+this.state.recID)
+  .then(async(response) => {
+   
+    if (response.status == 200) {
+       response.json().then((json) => {
+        
+        const imageData = `data:image/jpg;base64,${json[0].images}`;
+
+        this.setState({uri:imageData}, () => this.setState({loadingIMG: false}));
+        this.setState({loadingIMG:false});
+        this.setState({modalVisible: true});
+        
+        
+       })
+      
+    }else {
+     
+      return this.setState({ errorTxt: "Something went wrong" });
+    }
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
 }
 
 loadHistory = async () => {
@@ -145,17 +194,13 @@ loadHistory = async () => {
   if (id == null) {
     this.props.navigation.navigate("Login");
   }
-
   
-  return fetch(SERVER_IP+"getByRecId?id="+id+"&recid="+await this.state.recID)
+  return fetch(SERVER_IP+"getByRecId?id="+id+"&recid="+this.props.route.params.rec_id)
   .then(async(response) => {
-  
+
     if (response.status == 200) {
-       response.json().then(async(json) => {
-
-        const imageData = `data:image/jpg;base64,${json[0].images}`;
-
-       
+   
+       response.json().then((json) => {
         this.setState({title: json[0].title});
         this.setState({currency: json[0].currency});
         this.setState({date: json[0].dateatime});
@@ -163,8 +208,7 @@ loadHistory = async () => {
         this.setState({total: json[0].total.toString()});
         this.setState({change: json[0].changes.toString()});
         this.setState({items: JSON.parse(json[0].items.toString())});
-        this.setState({uri:imageData}, () => this.setState({loading: false}));
-
+        this.setState({recID: this.props.route.params.rec_id} ,() => this.setState({loading: false}));
    
        })
       
@@ -232,14 +276,16 @@ render() {
 
       <Text style={styles.title}>Edit , View & Save</Text>
 
+      {this.loadingScreen()}
+
       <Text style={Style.textStyle}> {this.state.errorTxt} </Text>
 
       
        <FlatList
       style={{flex: 1}}
           data={this.state.items}
-         
-          keyExtractor={(item) => item.pirce}
+          
+          keyExtractor={(item) => item.item}
           ListHeaderComponent={() => (
             <View>
 
@@ -249,27 +295,31 @@ render() {
                 transparent={true}
                 visible={this.state.modalVisible}
                 onRequestClose={() => {
+                  console.log("called");
                   Alert.alert("Modal has been closed.");
                   this.setState({modalVisible: !this.state.modalVisible});
                 }}>
                     <View style={Style.centeredView}>
+                      
                     <View style={Style.imgModalView}>
-                    <Text style={Style.modalText}>Pinch To Zoom</Text>
-                      <ImageZoom uri={this.state.uri} style={{ width: Dimensions.get('window').width, height:Dimensions.get('window').height }}/>
-                      <Pressable
-                        style={Style.button}
-                        onPress={() =>  this.setState({modalVisible: !this.state.modalVisible})}
-                      >
-                        <Text style={Style.textStyle}>Close</Text>
-                      </Pressable>
-                    </View>
+                      <Text style={Style.modalText}>Pinch To Zoom</Text>
+                        <ImageZoom uri={this.state.uri} style={{ width: Dimensions.get('window').width, height:Dimensions.get('window').height }}/>
+                        <Pressable
+                          style={Style.button}
+                          onPress={() =>  this.setState({modalVisible: !this.state.modalVisible})}
+                        >
+                      <Text style={Style.textStyle}>Close</Text>
+                    </Pressable>
+                </View>
+
+
                   </View>
 
                 </Modal>
 
                 <Pressable
                   style={Style.button}
-                  onPress={() => this.setState({modalVisible: true})}
+                  onPress={() => {this.setState({loadingIMG: true});this.loadImage();}}
                 >
                   <Text style={Style.textStyle}>Show Image Of Recipt</Text>
                 </Pressable>
@@ -312,28 +362,35 @@ render() {
 
             </View>
           )}
-          renderItem={({ item }) => {
+          renderItem={({ item,index }) => {
             return (
               <Fragment>
                 <View style={{flexDirection:"row"}}>
                   <View style={{flex:1}}>
                     <TextInput 
+                    
                     style={Style.inputBox}
                     theme={theme}
                     label="Item Name"
-                    onChangeText={(item) => this.setState({ item })}
-                    value={this.state.items }>
-                      {item.item}
+                    onChangeText={text => {
+                      this.state.items[index].item = text;
+                      this.setState({item});
+                    }}
+                    value={this.state.items[index].item}>
                     </TextInput>
                   </View>
                   <View style={{flex:1}}>
                     <TextInput 
+                    
                     style={Style.inputBox}
                     theme={theme}
                     label="Price"
-                    onChangeText={(item) => this.setState({ item})}
-                    value={this.state.items}>
-                      {item.price}
+                    onChangeText={text => {
+                      this.state.items[index].price = text;
+                      this.setState({item});
+                    }}
+                    value={this.state.items[index].price}>
+                   
                     </TextInput>
                   </View>
                 </View>

@@ -214,7 +214,7 @@ async componentWillUnmount() {
   
     if(map.length != 0)
     {
-      console.log(map);
+      
       this.setState({map: map});
     }
     else
@@ -222,8 +222,6 @@ async componentWillUnmount() {
       map[0] = {item: "Not Found" ,price: "No Price"};
       this.setState({map: map});
     }
-
-    console.log(map);
     return;
   }
   validateSave = async () => 
@@ -280,7 +278,7 @@ render(){
       <FlatList
       style={{flex: 1}}
           data={this.state.map}
-          keyExtractor={(item) => item.pirce}
+          keyExtractor={(item) => item.item}
           ListHeaderComponent={() => (
             <View>
 
@@ -330,7 +328,7 @@ render(){
                 
             </View>
           )}
-          renderItem={({ item }) => {
+          renderItem={({ item,index }) => {
             return (
               <Fragment>
                 <View style={{flexDirection:"row"}}>
@@ -339,9 +337,11 @@ render(){
                     style={Style.inputBox}
                     theme={theme}
                     label="Item Name"
-                    onChangeText={(item) => this.setState({ item })}
-                    value={this.state.map}>
-                      {item.item}
+                    onChangeText={text => {
+                      this.state.map[index].item = text;
+                      this.setState({item});
+                    }}
+                    value={this.state.map[index].item}>
                     </TextInput>
                   </View>
                   <View style={{flex:1}}>
@@ -349,9 +349,13 @@ render(){
                     style={Style.inputBox}
                     theme={theme}
                     label="Price"
-                    onChangeText={(item) => this.setState({ item })}
-                    value={this.state.map}>
-                      {item.price}
+                     onChangeText={text => {
+                      this.state.map[index].price = text;
+                      this.setState({item});
+                    }}
+                    value={this.state.map[index].price}>
+
+
                     </TextInput>
                   </View>
                 </View>
