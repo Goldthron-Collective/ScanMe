@@ -21,21 +21,16 @@ const MySubComponent = (props) => {
 
   const [datePicker, setDatePicker] = useState(false);
  
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date(props.data));
  
   function showDatePicker() {
     setDatePicker(true);
   };
 
   function onDateSelected(event, value) {
-    console.log(value + " SET");
     setDate(value);
   };
-  function closeDatePicker(){
-    setDatePicker(false);
-  }
   function saveCloseDatePicker(event, value){
-    setDate(value);
     setDatePicker(false);
 
   }
@@ -43,7 +38,8 @@ const MySubComponent = (props) => {
   
   if (props.display) {
 
-    console.log(date);
+    //console.log(new Date(props.data));
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
   
@@ -59,25 +55,16 @@ const MySubComponent = (props) => {
             style={Style.datePicker}
           />
         )}
+        {console.log(date)}
            {datePicker && (
-        <View style={{flexDirection:"row"}}>
-        <View style={{flex:1}}>
-          <Button
-            onPress={closeDatePicker}
-            title="Cancel"
-            color="#841584"
-          />
        
-        </View>
-        <View style={{flex:1}}>
-        <Button
-            onPress={saveCloseDatePicker}
-            title="Save"
-            color="#841584"
-          />
+          <Button
+              onPress={saveCloseDatePicker}
+              title="Done"
+              color="#007AFF"
+            />
+            
           
-        </View>
-      </View>
       )}
    
        <Pressable onPress={showDatePicker}>
@@ -295,7 +282,6 @@ render() {
                 transparent={true}
                 visible={this.state.modalVisible}
                 onRequestClose={() => {
-                  console.log("called");
                   Alert.alert("Modal has been closed.");
                   this.setState({modalVisible: !this.state.modalVisible});
                 }}>
@@ -332,7 +318,7 @@ render() {
                 label="Title"
                 />
 
-                <MySubComponent display={true} data={this.state.date} type={'recipt'}/>
+               {/*   <MySubComponent display={true} data={this.state.date} type={'recipt'}/> */}
 
                 <MySubComponent display={true} data={this.state.dateUpload} type={'upload'}/>
 

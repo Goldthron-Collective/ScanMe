@@ -29,6 +29,8 @@ class Save extends Component {
         itemPrice: [],
         map: [],
         title: "Untitled Recipt",
+        loading: true,
+        time: ""
       };
     }
 
@@ -36,20 +38,17 @@ class Save extends Component {
 
 async componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener("focus", async() => {
+      
       await this.getDate().then(
         await this.getCurrency().then(
           await this.getChange().then(
             await this.getTotal().then(
-              await this.getItems()
-
-            ).catch(e => {console.log(e)})
-          ).catch(e => {console.log(e)})
-        ).catch(e => {console.log(e)})
-      ).catch(e => {console.log(e)});
+              await this.getItems())
+              .catch(e => {console.log(e)}))
+            .catch(e => {console.log(e)}))
+          .catch(e => {console.log(e)}))
+        .catch(e => {console.log(e)});
      
-      
-      
-      
       
 
   });
@@ -59,43 +58,72 @@ async componentWillUnmount() {
 }
 
   getDate = async () => {
-    const date1 = /\d{2}([\/.-])\d{2}\1\d{4}/;
-    const date2 = /(?:^|\W)(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)(?:$|\W)/;
+ 
+    const dateRgx = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
+    const timeRgx = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]|$/;
+
+    var time = null;
     var date = null;
+   
 
     for(let i = 0; i < this.state.data.length; i++)
     {
-      date = this.state.data[i].match(date1);
-      if(date != null)
+      date = this.state.data[i].match(dateRgx);
+
+      if(date != null )
       {
-        date = this.state.data[i];
-        
-        break;
+        date = date[0];
       }
 
-      date = this.state.data[i].match(date2);
-      if(date != null)
+      time = this.state.data[i].match(timeRgx);
+
+      if(time != null)
       {
-        date = this.state.data[i];
-        
-        break;
-      }      
+        time = time[0];
+      }
+
     }
-    if (date != null)
+
+
+    
+    if (date == null)
     {
-      this.setState({date: date}, () => {
-        
-       // console.log("date = " +this.state.date);
-      });
+      date = new Date().toLocaleDateString();
     }
-    else
+
+    if (time == null)
     {
-      this.setState({date: "Not Found (DD/MM/YYYY)"}, () => {
-       
-        //console.log("date not found = " + this.state.date);
-      });
+      time =  new Date().toLocaleTimeString();
     }
-  
+
+    console.log(date);
+    console.log(time);
+
+    date =  date + " " + time;
+
+    const encodedParams = new URLSearchParams();
+    encodedParams.append("date", date);
+    encodedParams.append("time", time);
+    encodedParams.append("type", "TYPE_32");
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'x-botbrainapi-key': 'f4062e7d950d0d7baea9679d552b642e',
+        'x-botbrainapi-host': 'api.botbrain.io'
+      },
+      body: encodedParams
+    };
+
+    fetch('https://api.botbrain.io/date', options)
+      .then(response => response.json())
+      .then(response => console.log(response))
+      .catch(err => console.error(err));
+ 
+    this.setState({date: date});
+
+    
     return;
 
   }
@@ -216,23 +244,26 @@ async componentWillUnmount() {
     {
       
       this.setState({map: map});
+      
     }
     else
     {
       map[0] = {item: "Not Found" ,price: "No Price"};
       this.setState({map: map});
     }
+
+    this.setState({loading: false});
+
+
     return;
   }
-  validateSave = async () => 
-  {
+ 
 
-    // CHECK ALL DATA BEFORE SENDING 
 
     //Date format , missing fields , incorrect total (add each item price to check if total is correct)
     
-    this.sendToDB()
-  }
+   
+  
 
   sendToDB = async () => 
   {
@@ -267,6 +298,16 @@ async componentWillUnmount() {
   }
 
 render(){
+  if (this.state.loading == true) {
+    return (
+      <View style={Style.container}>
+
+          <Text style={{fontSize: 30,fontWeight: 'bold'}}>Loading...</Text>
+
+
+        </View>
+    )
+  }
     return (
       
       <View style={{paddingHorizontal: 30,paddingTop: 50 , flex:1}}>
@@ -374,7 +415,7 @@ render(){
       <Button
         title="Confirm"
         color="#00fa00"
-        onPress={this.validateSave}
+        onPress={()=> this.sendToDB()}
       />
 
       <Button
