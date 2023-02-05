@@ -1,7 +1,7 @@
 import React, { Component , Fragment} from "react";
 import { View,Text,StyleSheet,FlatList ,Button } from "react-native";
 import Style from "./Style";
-
+import { config } from '../config.js'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SERVER_IP} from "../serverConnect"
 import { TextInput ,MD3LightTheme as DefaultTheme} from 'react-native-paper';
@@ -101,27 +101,29 @@ async componentWillUnmount() {
 
     date =  date + " " + time;
 
+    
+
+
     const encodedParams = new URLSearchParams();
-    encodedParams.append("date", date);
-    encodedParams.append("time", time);
+    encodedParams.append("date", date+" "+time);
     encodedParams.append("type", "TYPE_32");
 
     const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'x-botbrainapi-key': 'f4062e7d950d0d7baea9679d552b642e',
-        'x-botbrainapi-host': 'api.botbrain.io'
+        'content-type': 'application/x-www-form-urlencoded',
+        'X-RapidAPI-Key': config.API_KEY2,
+        'X-RapidAPI-Host': 'date-time-format-conversion1.p.rapidapi.com'
       },
       body: encodedParams
     };
 
-    fetch('https://api.botbrain.io/date', options)
+    fetch('https://date-time-format-conversion1.p.rapidapi.com/date', options)
       .then(response => response.json())
-      .then(response => console.log(response))
+      .then(response => this.setState({date: response.data.formatted})
+        
+      )
       .catch(err => console.error(err));
- 
-    this.setState({date: date});
 
     
     return;
