@@ -38,30 +38,32 @@ class Save extends Component {
 
 async componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener("focus", async() => {
-      
-      await this.getDate().then(
-        await this.getCurrency().then(
-          await this.getChange().then(
-            await this.getTotal().then(
-              await this.getItems())
-              .catch(e => {console.log(e)}))
-            .catch(e => {console.log(e)}))
-          .catch(e => {console.log(e)}))
-        .catch(e => {console.log(e)});
+      //Add loading screen until its done!
+      await this.parseData()
      
-      
-
   });
   }
 async componentWillUnmount() {
   this.unsubscribe();
 }
 
-  getDate = async () => {
+  parseData = async () => {
  
     const dateRgx = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
     const timeRgx = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]|$/;
+    const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
+    const change = /(?:^|\W)((change)|(change due))(?:$|\W)/;
+    const total = /(?:^|\W)((balance)|(total)|(due)|(sub-total)|(sale)|(deficit))(?:$|\W)/;
 
+    var currency2 = null;
+    var float = null;
+    let j = 0;
+    const map = [];
+    let curItem;
+
+    var totalMatch = null;
+    var changeMatch = null;
+    var currency = null;
     var time = null;
     var date = null;
    
@@ -72,6 +74,7 @@ async componentWillUnmount() {
 
       if(date != null )
       {
+
         date = date[0];
       }
 
@@ -82,9 +85,83 @@ async componentWillUnmount() {
         time = time[0];
       }
 
+      currency = this.state.data[i].match(currencyRegex);
+     
+      if(currency != null)
+      {
+        this.setState({currency: currency[0]});
+      }
+
+      changeMatch = this.state.data[i].match(change);
+
+
+      if(changeMatch != null)
+      {
+        changeMatch  = this.state.data[i];
+        this.state.data.length = i;
+        changeMatch = String(changeMatch);  
+        var doublenumber = changeMatch.match(/([+-]?\d+(\.\d+)?)/g);
+        console.log("CHANGE == " + doublenumber);
+
+        if(doublenumber != null)
+        {
+          this.setState({change: String(doublenumber)});
+        }
+        else
+        {
+          this.setState({change: changeMatch});
+        }
+       
+      }
+
+
+   
+      totalMatch = this.state.data[i].match(total);
+
+      if(totalMatch != null)
+      {
+        totalMatch  = this.state.data[i];
+        this.state.data.length = i;
+        totalMatch = String(totalMatch);  
+        var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
+        console.log("TOTAL == " + doublenumber);
+        this.setState({total: String(doublenumber)});
+        break;
+      }
+
+      currency2 = this.state.data[i].match(currencyRegex);
+      float = this.state.data[i].match(/([+-]?[0-9]+[.][0-9]*([e][+-]?[0-9]+)?)/g);
+
+      if(currency2 != null || float != null)
+      {
+        curItem = String(this.state.data[i].replace(float,''));
+        curItem = curItem.replace(currencyRegex,"");
+        //remove currency if avaliable
+        // makebuttons next to each other
+        map[j] = {item: curItem ,price: float[0]};
+        j++;
+      }
+
     }
 
 
+    if(totalMatch == null)
+    {
+      this.setState({total: "0"});
+    }
+
+    if(changeMatch == null)
+    {
+      this.setState({change: "0"});
+     
+    }
+
+
+    if (currency == null)
+    {
+      this.setState({currency: "£"});
+    }
+    
     
     if (date == null)
     {
@@ -124,148 +201,28 @@ async componentWillUnmount() {
         
       )
       .catch(err => console.error(err));
-
     
-    return;
-
-  }
-  getCurrency = async () => 
-  {
-    const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
-    var currency = null;
-
-    for(let i = 0; i < this.state.data.length; i++)
-    {
-      currency = this.state.data[i].match(currencyRegex);
-     
-      if(currency != null)
+      if(map.length != 0)
       {
-        this.setState({currency: currency[0]});
-        break;
-      }
-    }
-
-    if (currency == null)
-    {
-      this.setState({currency: "£"});
-    }
-    return;
-  }
-  getChange = async () => 
-  {
-
-    const change = /(?:^|\W)((change)|(change due))(?:$|\W)/;
-    var changeMatch = null;
-
-    for (let i = 0; i < this.state.data.length; i++) 
-    {
-      changeMatch = this.state.data[i].match(change);
-      if(changeMatch != null)
-      {
-        changeMatch  = this.state.data[i];
-        this.state.data.length = i;
-        changeMatch = String(changeMatch);  
-        var doublenumber = changeMatch.match(/([+-]?\d+(\.\d+)?)/g);
-        console.log("CHANGE == " + doublenumber);
-        if(doublenumber != null)
-        {
-          this.setState({change: String(doublenumber)});
-        }
-        else
-        {
-          this.setState({change: changeMatch});
-        }
         
-        break;
+        this.setState({map: map});
+        
       }
-     
-    }
-
-    if(changeMatch == null)
-    {
-      this.setState({change: "0"});
-     
-    }
+      else
+      {
+        map[0] = {item: "Not Found" ,price: "No Price"};
+        this.setState({map: map});
+      }
+  
+      this.setState({loading: false});
 
     return;
+
   }
-  getTotal = async () => 
-  {
-    const total = /(?:^|\W)((balance)|(total)|(due)|(sub-total)|(sale)|(deficit))(?:$|\W)/;
-    var totalMatch = null;
-
-    for (let i = 0; i < this.state.data.length; i++) 
-    {
-      totalMatch = this.state.data[i].match(total);
-      if(totalMatch != null)
-      {
-        totalMatch  = this.state.data[i];
-        this.state.data.length = i;
-        totalMatch = String(totalMatch);  
-        var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
-        console.log("TOTAL == " + doublenumber);
-        this.setState({total: String(doublenumber)});
-        break;
-      }
-    }
-    if(totalMatch == null)
-    {
-      this.setState({total: "0"});
-    }
-   
-       return;
-  }
-  getItems = async () => 
-  {
-    const currencyRegex = /[\$\xA2-\xA5\u058F\u060B\u09F2\u09F3\u09FB\u0AF1\u0BF9\u0E3F\u17DB\u20A0-\u20BD\uA838\uFDFC\uFE69\uFF04\uFFE0\uFFE1\uFFE5\uFFE6]/;
-    var currency = null;
-    var float = null;
-    let j = 0;
-    const map = [];
-    let curItem;
-
-
-  
-    for(let i = 0; i < this.state.data.length; i++)
-    {
-      currency = this.state.data[i].match(currencyRegex);
-      float = this.state.data[i].match(/([+-]?[0-9]+[.][0-9]*([e][+-]?[0-9]+)?)/g);
-
-      if(currency != null || float != null)
-      {
-        curItem = String(this.state.data[i].replace(float,''));
-        curItem = curItem.replace(currencyRegex,"");
-        //remove currency if avaliable
-        // makebuttons next to each other
-        map[j] = {item: curItem ,price: float[0]};
-        j++;
-      }
-    }
-  
-    if(map.length != 0)
-    {
-      
-      this.setState({map: map});
-      
-    }
-    else
-    {
-      map[0] = {item: "Not Found" ,price: "No Price"};
-      this.setState({map: map});
-    }
-
-    this.setState({loading: false});
-
-
-    return;
-  }
- 
-
 
     //Date format , missing fields , incorrect total (add each item price to check if total is correct)
     
    
-  
 
   sendToDB = async () => 
   {
