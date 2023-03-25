@@ -124,7 +124,6 @@ async componentWillUnmount() {
         this.state.data.length = i;
         totalMatch = String(totalMatch);  
         var doublenumber = totalMatch.match(/([+-]?\d+(\.\d+)?)/g);
-        console.log("TOTAL == " + doublenumber);
         this.setState({total: String(doublenumber)});
         break;
       }
@@ -173,34 +172,8 @@ async componentWillUnmount() {
       time =  new Date().toLocaleTimeString();
     }
 
-    console.log(date);
-    console.log(time);
-
-    date =  date + " " + time;
-
-    
-
-
-    const encodedParams = new URLSearchParams();
-    encodedParams.append("date", date+" "+time);
-    encodedParams.append("type", "TYPE_32");
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-        'X-RapidAPI-Key': config.API_KEY2,
-        'X-RapidAPI-Host': 'date-time-format-conversion1.p.rapidapi.com'
-      },
-      body: encodedParams
-    };
-
-    fetch('https://date-time-format-conversion1.p.rapidapi.com/date', options)
-      .then(response => response.json())
-      .then(response => this.setState({date: response.data.formatted})
-        
-      )
-      .catch(err => console.error(err));
+     this.setState({date: date + " " + time})
+       
     
       if(map.length != 0)
       {

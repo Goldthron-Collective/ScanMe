@@ -107,6 +107,7 @@ class MoreHistory extends Component {
       loading: true,
       recID: this.props.route.params.rec_id,
       modalVisible: false,
+      DeletemodalVisible: false,
       loadingIMG: "",
 
     };
@@ -243,8 +244,25 @@ Save = async () => {
 Delete = async() =>
 {
 
+  return fetch(SERVER_IP+"delRec?id="+this.state.id+"&recid="+this.state.recID,{
+  method: "POST",
+  headers: { "Content-Type": "application/json"}})
+  
+  .then(async(response) => {
+    
+      if (response.status == 200) {
+        
+        this.setState({DeletemodalVisible: !this.state.DeletemodalVisible});
+        return  this.props.navigation.navigate("History");
+  
+      } else {
+  
+        return this.setState({ errorTxt: "Erorr Cant Delete" });
+      }
+    }).catch((error) => {
+      return this.setState({ errorTxt: "Erorr Cant Delete" });
+    });
 }
-
 render() {
   if (this.state.loading == true) {
     return (
@@ -384,6 +402,32 @@ render() {
             )
           }}
         />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.DeletemodalVisible}
+          onRequestClose={() => {
+            this.setState({DeletemodalVisible: !this.state.DeletemodalVisible});
+          }}>
+          <View style={Style.centeredView}>
+            <View style={Style.modalView}>
+              <Text style={Style.modalText}>Are You Sure You Want To Delete This Recipt?</Text>
+            <Pressable
+                style={Style.DeclineButton}
+                onPress={() => this.Delete()}>
+                <Text style={Style.buttonText}>Delete</Text>
+              </Pressable>
+
+              <Pressable
+                style={Style.AcceptButton}
+                onPress={() => this.setState({DeletemodalVisible: !this.state.DeletemodalVisible})}>
+                <Text style={Style.buttonText}>Cancel</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+
          <View style={{flexDirection:"row",paddingTop:0}}  >
        
        <View style={{flex:1}}>
@@ -400,11 +444,13 @@ render() {
        <View style={{flex:1}}>
 
        <TouchableOpacity
-         onPress={() => this.Delete()}
+         onPress={() => this.setState({DeletemodalVisible: true})}
          style={Style.DeclineButton}
        >
          <Text style={Style.buttonText}>Delete</Text>
        </TouchableOpacity>
+
+       
 
        </View>
 

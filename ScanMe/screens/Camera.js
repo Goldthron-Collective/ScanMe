@@ -91,17 +91,22 @@ export default function App({navigation}) {
       });
       const result = await response.json();
 
-   
-
-      const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
+      if(response.status == '200')
+      {
+        const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
   
-      const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
-
-      navigation.navigate("Save",{arrData: lower,imageData: photos});
+        const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
   
-      return lower
-        ? lower
-        : { text: "This image doesn't contain any text!" };
+        navigation.navigate("Save",{arrData: lower,imageData: photos});
+      }
+      else
+      {
+        return lower ? lower: { text: "This image doesn't contain any text!" };
+      }
+
+      
+  
+     
     }
     const pickImage = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -170,7 +175,7 @@ export default function App({navigation}) {
           position: 'absolute',
           left: '7%',
           top: '7%',
-          borderRadius: '50%',
+          borderRadius: 50,
           height: 40,
           width: 40, 
           backgroundColor: flashMode === 'off' ? '#000' : '#fff',
@@ -220,7 +225,7 @@ const styles = StyleSheet.create({
   },
   flipBtn: {
     marginTop: 20,
-    borderRadius: '50%',
+    borderRadius: 50,
     height: 25,
     width: 25,
     backgroundColor: '#fff',
