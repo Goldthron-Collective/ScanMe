@@ -122,7 +122,7 @@ class MoreHistory extends Component {
    
     this.unsubscribe = this.props.navigation.addListener("focus", () => {
       this.setState({loading: true});
-    this.loadHistory();
+      this.loadHistory();
    
 
   });
@@ -291,10 +291,8 @@ render() {
           data={this.state.items}
           
           keyExtractor={(item) => item.item}
-          ListHeaderComponent={() => (
+          ListHeaderComponent={
             <View>
-
-
                 <Modal
                 animationType="slide"
                 transparent={true}
@@ -365,7 +363,7 @@ render() {
                 />
 
             </View>
-          )}
+          }
           renderItem={({ item,index }) => {
             return (
               <Fragment>
