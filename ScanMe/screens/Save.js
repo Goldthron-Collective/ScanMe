@@ -252,7 +252,7 @@ render(){
       style={{flex: 1}}
           data={this.state.map}
           keyExtractor={(item) => item.item}
-          ListHeaderComponent={() => (
+          ListHeaderComponent={
             <View>
 
               <TextInput
@@ -300,7 +300,7 @@ render(){
                 />
                 
             </View>
-          )}
+          }
           renderItem={({ item,index }) => {
             return (
               <Fragment>
