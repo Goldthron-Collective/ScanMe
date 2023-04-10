@@ -1,0 +1,9 @@
+Database 1 - Login
+
+Username , email , password , first name , last name (User ID (Incremet) )
+
+
+Database 2 - storage
+
+ (User ID) , recritpID(Incremeted)  , date+time , total , curreny , change , items (JSON Stringfy)
+

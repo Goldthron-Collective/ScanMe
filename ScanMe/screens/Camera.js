@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View, SafeAreaView, Button, Image , TouchableOpacity } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Image , TouchableOpacity } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Style from "./Style";
 
 import { Buffer } from "buffer";
 import {SERVER_IP} from "../serverConnect"
@@ -10,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
 //import ImagePickerComponent from "../ImagePickerComponent";
 import gallery from '../icons/gallery.png'
+import { Button, Dialog, Portal, Provider, Text } from 'react-native-paper';
 
 import { shareAsync } from 'expo-sharing';
 import helperFunctions from "../helperFunctions.js";
@@ -33,6 +35,9 @@ export default function App({navigation}) {
   
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
   const [flashMode, setFlashMode] = useState('off');
+
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+
   
 
   useEffect(() => {
@@ -81,27 +86,58 @@ export default function App({navigation}) {
   
   let callGoogleVisionAsync = async (image) => {
       const body = generateBody(image); //pass in our image for the payload
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-      const result = await response.json();
+      const id = await AsyncStorage.getItem("@id");
 
-      if(response.status == '200')
-      {
-        const mergedArray = appHelper.initLineSegmentation(result.responses[0]);
-  
-        const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
-  
-        navigation.navigate("Save",{arrData: lower,imageData: photos});
+      try{
+        return fetch(SERVER_IP+"incrementAccount?id="+id, {
+          method: "POST",
+          headers: { "Content-Type": "application/json"},
+        }).then(async (response) =>{
+          if(response.status == '400')
+          {
+            setIsDialogVisible(true);
+            console.log("CAUGHT");
+            
+
+          }
+          else if(response.status == '200')
+          {
+            await fetch(API_URL, {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(body),
+            }).then((response) => {
+              if(response.status == '200')
+              {
+                console.log("Sent To Goole");
+      
+                response.json().then(async(json) => {
+                
+                const mergedArray = appHelper.initLineSegmentation(json.responses[0]);
+        
+                const lower = mergedArray.map(mergedArray => mergedArray.toLowerCase()); //lower case validation
+          
+                navigation.navigate("Save",{arrData: lower,imageData: photos});
+                });
+              }
+              else
+              {
+                return lower ? lower: { text: "This image doesn't contain any text!" };
+      
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          }
+        })
       }
-      else
+      catch
       {
-        return lower ? lower: { text: "This image doesn't contain any text!" };
+        return;
       }
 
       
@@ -161,13 +197,29 @@ export default function App({navigation}) {
     return (
       <SafeAreaView style={styles.container}>
         <Image style={styles.preview} source={{ uri: "data:image/jpg;base64," + photo.base64 }} />
-        {hasMediaLibraryPermission ? <Button title="Scan & Save" onPress={savePhoto} /> : undefined}
-        <Button title="Discard" onPress={() => setPhoto(undefined)} />
+  
+      <View style={{flexDirection: 'row'}}> 
+        {hasMediaLibraryPermission ? <TouchableOpacity
+            style={Style.buttonStyleDefault}
+            onPress={savePhoto}
+          >
+            <Text style={Style.buttonText}>Scan & Save</Text>
+          </TouchableOpacity>  : undefined}
+
+        <TouchableOpacity
+            style={Style.buttonStyleDefault}
+            onPress={() => setPhoto(undefined)}
+          >
+            <Text style={Style.buttonText}>Discard</Text>
+          </TouchableOpacity>
+      </View>
+
       </SafeAreaView>
     );
   }
 
   return (
+    <Provider>
     <Camera flashMode={flashMode} type={cameraType} style={styles.container} ref={cameraRef}>
 
         <TouchableOpacity style=
@@ -187,7 +239,47 @@ export default function App({navigation}) {
             </Text>
         </TouchableOpacity>
 
+       
+      
+      <Portal>
+          <Dialog
+            visible={isDialogVisible}
+            onDismiss={() => setIsDialogVisible(false)}>
+            <Dialog.Title>Wait hang on!</Dialog.Title>
+            <Dialog.Content>
+
+              <Text variant="bodyMedium">You have reached the free tier limit, Please buy premium for more scans</Text>
+
+
+            </Dialog.Content>
+            <Dialog.Actions>
+
+            <TouchableOpacity
+            style={Style.buttonStyleDefault}
+            onPress={() => setIsDialogVisible(false)}
+          >
+            <Text style={Style.buttonText}>Ok</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={Style.buttonStyleDefault}
+            onPress={() => setIsDialogVisible(false)}
+          >
+            <Text style={Style.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+        
+
+
+       
+
       <View style={styles.buttonContainer}>
+
+      
+      
 
       <TouchableOpacity onPress={pickImage}>
         <Image source={gallery}/>
@@ -195,15 +287,13 @@ export default function App({navigation}) {
 
       <TouchableOpacity style={styles.cameraBtn} onPress={takePic} />
       <TouchableOpacity style={styles.flipBtn} onPress={switchCamera} />
-
-
-      
         
 
       </View>
 
       <StatusBar style="auto" />
     </Camera>
+    </Provider>
   );
 }
 
