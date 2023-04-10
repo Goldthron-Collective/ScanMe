@@ -48,13 +48,11 @@ export default StyleSheet.create({
   },
   buttonStyleDefault:
   {
-
     borderRadius: 10,
     padding: 20,
     marginHorizontal: 15,
     marginVertical: 10,
     backgroundColor: '#04bbd4'
-
   },
   inputBox: {
     padding: 2,
